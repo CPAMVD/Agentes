@@ -1,1899 +1,2253 @@
-<html><head><base href="."  /><script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script><style>
-body {
-  background-color: #8B4513;
-  font-family: 'Arial', sans-serif;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+<html><head><base href="." />
+<title>Panadería la Bendición</title>
+<meta charset="UTF-8">
+<style>
+  :root {
+    --primary-color: #8B4513;      /* Dark brown for bread */
+    --secondary-color: #DEB887;    /* Light brown for pastries */
+    --accent-color: #D2691E;       /* Chocolate color */
+    --background-color: #FFF8DC;   /* Cornsilk - warm background */
+  }
 
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 10px;
-  color: white;
-  z-index: 1000;
-}
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 20px;
+  }
 
-.header-title {
-  font-family: Arial;
-  font-size: 18px;
-  margin: 0;
-}
+  .container {
+    max-width: 1200px; /* Increased from 1000px */
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px 30px; /* Increased horizontal padding */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
 
-.header-subtitle {
-  font-family: Arial;
-  font-size: 10px;
-  margin: 0;
-}
+  .tabs {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping if needed */
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--secondary-color);
+    gap: 2px; /* Add small gap between tabs */
+  }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-}
+  .tab {
+    padding: 10px 15px; /* Slightly reduced horizontal padding */
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap; /* Prevent text wrapping within tabs */
+  }
 
-.login-container, .menu-container, .agents-container, .admin-container {
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  max-width: 800px;
-  margin: auto;
-}
+  .tab.active {
+    background-color: var(--secondary-color);
+    border-radius: 4px 4px 0 0;
+  }
 
-.church-logo {
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 20px;
-}
+  .tab-content {
+    display: none;
+  }
 
-.btn-primary {
-  background-color: #1e42e2;
-  border-color: #13338b;
-}
+  .tab-content.active {
+    display: block;
+  }
 
-.btn-primary:hover {
-  background-color: #654321;
-  border-color: #654321;
-}
+  h1 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 30px;
+    clear: both; /* Add this to ensure title appears below the buttons */
+  }
 
-.footer {
-  text-align: center;
-  color: white;
-  margin-top: 20px;
-}
+  .ingredient-form, .recipe-form, .production-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-.menu-btn {
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 1em;
-}
+  .inventory-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-.agents-btn {
-  margin: 5px;
-  padding: 10px 20px;
-  font-size: 1em;
-  width: auto;
-}
+  input, select {
+    padding: 8px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+  }
 
-.btn i {
-  margin-right: 10px;
-}
+  button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
 
-#menuContainer, #agentsContainer, #attendanceContainer, #adminContainer {
-  display: none;
-}
+  button:hover {
+    background-color: var(--primary-color);
+  }
 
-.buttons-row {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
 
-.swal2-modal {
-  width: 80% !important;
-  max-width: 800px !important;
-}
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--secondary-color);
+  }
 
-.form-preview-image {
-  max-width: 200px;
-  max-height: 200px;
-  margin: 10px 0;
-}
+  th {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+  }
 
-.agents-table-container {
-  margin-top: 20px;
-  overflow-x: auto;
-}
+  .cost-summary {
+    background-color: var(--secondary-color);
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+  }
 
-.agents-table {
-  width: 100%;
-  margin-top: 20px;
-  background: white;
-  border-collapse: collapse;
-}
+  .warning {
+    color: red;
+    font-weight: bold;
+  }
 
-.agents-table th,
-.agents-table td {
-  padding: 10px;
-  border: 1px solid #dee2e6;
-  text-align: left;
-}
+  .recipe-container {
+    border: 1px solid var(--secondary-color);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+  }
 
-.agents-table th {
-  background-color: #8B4513;
-  color: white;
-}
+  .recipe-ingredients {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #fff5e6;
+    border-radius: 4px;
+  }
 
-.agents-table img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
-}
+  .cost-categories {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff5e6;
+    border-radius: 4px;
+  }
 
-.agents-table tbody tr:hover {
-  background-color: #f8f9fa;
-}
+  .cost-category {
+    margin: 10px 0;
+    display: grid;
+    grid-template-columns: 200px 1fr 100px;
+    gap: 10px;
+    align-items: center;
+  }
 
-.signatures {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 100px;
-  text-align: center;
-}
-.signature-line {
-  width: 200px;
-  border-top: 1px solid black;
-  margin-top: 50px;
-  margin-bottom: 10px;
-}
-.signature-title {
-  font-weight: bold;
-}
+  .cost-category label {
+    font-weight: bold;
+  }
 
-#adminContainer {
-  display: none;
-}
-</style></head><body>
-<div class="header">
-  <h1 class="header-title">Parroquia Santa Teresita</h1>
-  <p class="header-subtitle">Bananera, Morales, Izabal - <span id="currentUserDisplay"></span></p>
+  .cost-category input,
+  .cost-category select {
+    padding: 8px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+  }
+
+  .production-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .status-pending {
+    color: orange;
+    font-weight: bold;
+  }
+
+  .status-completed {
+    color: green;
+    font-weight: bold;
+  }
+
+  .status-cancelled {
+    color: red;
+    font-weight: bold;
+  }
+
+  .kardex-entry {
+    background-color: #f9f9f9;
+  }
+
+  .kardex-exit {
+    background-color: #fff3f3;
+  }
+
+  #kardexTable th, #kardexTable td {
+    padding: 8px;
+    text-align: right;
+  }
+
+  #kardexTable th:first-child,
+  #kardexTable td:first-child,
+  #kardexTable th:nth-child(2),
+  #kardexTable td:nth-child(2),
+  #kardexTable th:nth-child(3),
+  #kardexTable td:nth-child(3) {
+    text-align: left;
+  }
+
+  /* Add these styles for the login screen */
+  .login-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .login-box {
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='%23DEB887' opacity='0.1'%3E%3Cpath d='M12,3.5c4.1,0,7.5,3.4,7.5,7.5c0,4.1-3.4,7.5-7.5,7.5S4.5,15.1,4.5,11C4.5,6.9,7.9,3.5,12,3.5z M12,2C7,2,3,6,3,11c0,5,4,9,9,9s9-4,9-9C21,6,17,2,12,2z M15.7,14.3L12,10.6L8.3,14.3l-1.4-1.4l5.1-5.1l5.1,5.1L15.7,14.3z'/%3E%3C/svg%3E") no-repeat 95% 5%;
+    border: 2px solid var(--secondary-color);
+    padding: 30px;
+    border-radius: 8px;
+  }
+
+  .login-box h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .login-field {
+    margin-bottom: 15px;
+  }
+
+  .login-field label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+  }
+
+  .login-field input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+  }
+
+  .login-error {
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+    display: none;
+  }
+
+  .login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .login-button:hover {
+    background-color: var(--accent-color);
+  }
+
+  /* Hide the main container initially */
+  .container {
+    display: none;
+  }
+
+  /* Add to existing CSS */
+  .sellers-form {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .seller-input-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .seller-settlements {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff5e6;
+    border-radius: 8px;
+  }
+
+  .settlement-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .returns-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--secondary-color);
+  }
+
+  /* Add these styles for recipe editing */
+  .recipe-edit-form {
+    background: #fff5e6;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+
+  .edit-fields {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .recipe-ingredients-edit {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+
+  .ingredient-edit-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 10px;
+    margin: 5px 0;
+    align-items: center;
+  }
+
+  .edit-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .recipe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .edit-button {
+    padding: 5px 10px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .edit-button:hover {
+    background-color: var(--accent-color);
+    color: white;
+  }
+
+  /* Add CSS for logout button */
+  .logout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .logout-button:hover {
+    background-color: var(--primary-color);
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+<div id="loginScreen" class="login-container">
+  <div class="login-box">
+    <h2>🥨 Panadería la Bendición 🥖</h2>
+    <div id="loginError" class="login-error">
+      Usuario o contraseña incorrectos
+    </div>
+    <div class="login-field">
+      <label>Usuario:</label>
+      <input type="text" id="username" placeholder="Ingrese su usuario">
+    </div>
+    <div class="login-field">
+      <label>Contraseña:</label>
+      <input type="password" id="password" placeholder="Ingrese su contraseña">
+    </div>
+    <button class="login-button" onclick="login()">Ingresar</button>
+  </div>
 </div>
+
 <div class="container">
-  <div id="loginContainer" class="login-container">
-    <div class="text-center">
-      <svg class="church-logo" viewBox="0 0 100 100">
-        <path d="M50 10 L90 40 L80 40 L80 90 L20 90 L20 40 L10 40 Z" fill="#8B4513"/>
-        <rect x="45" y="60" width="10" height="30" fill="#654321"/>
-        <circle cx="50" cy="30" r="8" fill="#654321"/>
-      </svg>
-      <h2 class="mb-4">Parroquia Santa Teresita del Niño Jesús</h2>
-      <h4 class="mb-4">Sistema de Gestión de Agentes de Pastoral</h4>
-    </div>
-
-    <form id="loginForm">
-      <div class="mb-3">
-        <label for="username" class="form-label">Usuario</label>
-        <input type="text" class="form-control" id="username" required>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" required>
-      </div>
-      <div class="buttons-row">
-        <button type="submit" class="btn btn-primary">Ingresar</button>
-        <button type="button" class="btn btn-link" onclick="forgotPassword()">Olvidé mi Contraseña</button>
-      </div>
-    </form>
+  <button onclick="logout()" class="logout-button">Cerrar Sesión</button>
+  <div style="margin-bottom: 20px;">
+    <button onclick="generateTotalInventoryReport()" style="float: left;">
+      Generar Reporte de Inventario Total
+    </button>
+    <button onclick="generateSalesReport()" style="float: left; margin-left: 10px;">
+      Generar Reporte de Ventas
+    </button>
+    <h1>🥨 Panadería la Bendición 🥖</h1>
+    <div style="clear: both;"></div> <!-- Add this div to ensure proper clearfix -->
   </div>
 
-  <div id="menuContainer" class="menu-container">
-    <div class="text-center mb-4">
-      <h2>Menú Principal</h2>
-    </div>
-    <div class="buttons-row">
-      <button class="btn btn-primary menu-btn" onclick="showAgentsPanel()" data-permission="zona1">
-        <i class="fas fa-church"></i> Zona 1
-      </button>
-      <button class="btn btn-primary menu-btn" onclick="showAgentsPanel()" data-permission="zona2">
-        <i class="fas fa-church"></i> Zona 2
-      </button>
-      <button class="btn btn-primary menu-btn" onclick="showAgentsPanel()" data-permission="zona3">
-        <i class="fas fa-church"></i> Zona 3
-      </button>
-      <button class="btn btn-primary menu-btn" onclick="showAgentsPanel()" data-permission="zona4">
-        <i class="fas fa-church"></i> Zona 4
-      </button>
-      <button class="btn btn-primary menu-btn" onclick="showAdminPanel()" data-permission="admin">
-        <i class="fas fa-cogs"></i> Administración
-      </button>
-      <button class="btn btn-danger menu-btn" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> Salir
-      </button>
+  <div class="tabs">
+    <button class="tab" onclick="showTab('settings')">⚙️ Configuración</button>
+    <button class="tab active" onclick="showTab('costs')">💰 Costos</button>
+    <button class="tab" onclick="showTab('inventory')">📦 Inventario</button>
+    <button class="tab" onclick="showTab('recipes')">📝 Recetas</button>
+    <button class="tab" onclick="showTab('production')">🏭 Órdenes de Producción</button>
+    <button class="tab" onclick="showTab('finished')">🥖 Producto Terminado</button>
+    <button class="tab" onclick="showTab('kardex')">📊 Kardex</button>
+    <button class="tab" onclick="showTab('exitOrders')">🚚 Órdenes de Salida</button>
+    <button class="tab" onclick="showTab('sellers')">👥 Vendedores</button>
+  </div>
+
+  <div id="settingsTab" class="tab-content">
+    <h3>Configuración de la Panadería</h3>
+    
+    <div style="display: grid; gap: 20px; padding: 20px; background: white; border-radius: 8px;">
+      <div class="settings-section">
+        <h4>Información General</h4>
+        <div class="settings-form">
+          <label>Nombre de la Panadería:</label>
+          <input type="text" id="bakeryName" placeholder="Nombre de la panadería">
+          
+          <label>Dirección:</label>
+          <input type="text" id="bakeryAddress" placeholder="Dirección">
+          
+          <label>Teléfono:</label>
+          <input type="text" id="bakeryPhone" placeholder="Teléfono">
+          
+          <label>Email:</label>
+          <input type="email" id="bakeryEmail" placeholder="Email">
+          
+          <label>NIT:</label>
+          <input type="text" id="bakeryTaxId" placeholder="NIT">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h4>Parámetros de Producción</h4>
+        <div class="settings-form">
+          <label>Capacidad Diaria de Producción (unidades):</label>
+          <input type="number" id="dailyCapacity" placeholder="Capacidad diaria">
+          
+          <label>Horario de Producción:</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <input type="time" id="productionStart" placeholder="Hora inicio">
+            <input type="time" id="productionEnd" placeholder="Hora fin">
+          </div>
+          
+          <label>Días de Trabajo:</label>
+          <div class="workdays-selector">
+            <label><input type="checkbox" value="1"> Lunes</label>
+            <label><input type="checkbox" value="2"> Martes</label>
+            <label><input type="checkbox" value="3"> Miércoles</label>
+            <label><input type="checkbox" value="4"> Jueves</label>
+            <label><input type="checkbox" value="5"> Viernes</label>
+            <label><input type="checkbox" value="6"> Sábado</label>
+            <label><input type="checkbox" value="0"> Domingo</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h4>Parámetros Financieros</h4>
+        <div class="settings-form">
+          <label>Moneda:</label>
+          <select id="currency">
+            <option value="GTQ">Quetzales (GTQ)</option>
+            <option value="USD">Dólares (USD)</option>
+            <option value="EUR">Euros (EUR)</option>
+            <option value="PEN">Soles (PEN)</option>
+          </select>
+          
+          <label>IVA (%):</label>
+          <input type="number" id="taxRate" placeholder="Porcentaje de IVA">
+          
+          <label>Margen de Utilidad por Defecto (%):</label>
+          <input type="number" id="defaultProfitMargin" placeholder="Margen de utilidad">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h4>Alertas de Inventario</h4>
+        <div class="settings-form">
+          <label>Días de Anticipación para Alertas:</label>
+          <input type="number" id="alertDays" placeholder="Días de anticipación">
+          
+          <label>Porcentaje Mínimo de Stock (%):</label>
+          <input type="number" id="minStockPercentage" placeholder="Porcentaje mínimo">
+          
+          <label>Email para Notificaciones:</label>
+          <input type="email" id="alertEmail" placeholder="Email para alertas">
+        </div>
+      </div>
+
+      <button onclick="saveSettings()" class="save-settings-btn">Guardar Configuración</button>
     </div>
   </div>
 
-  <div id="agentsContainer" class="agents-container">
-    <div class="text-center mb-4">
-      <h2>Agentes de Pastoral</h2>
+  <div id="costsTab" class="tab-content active">
+    <div class="ingredient-form">
+      <input type="text" id="ingredientName" placeholder="Nombre del ingrediente">
+      <input type="number" id="ingredientQuantity" placeholder="Cantidad">
+      <input type="number" id="ingredientPrice" placeholder="Precio">
+      <button onclick="addIngredient()">Agregar</button>
     </div>
-    <div class="buttons-row">
-      <button class="btn btn-success agents-btn" onclick="newAgent()">
-        <i class="fas fa-cross"></i> Nuevo
-      </button>
-      <button class="btn btn-warning agents-btn" onclick="showImportDialog()">
-        <i class="fas fa-file-import"></i> Importar Excel
-      </button>
-      <button class="btn btn-primary agents-btn" onclick="editAgent()">
-        <i class="fas fa-pray"></i> Editar
-      </button>
-      <button class="btn btn-danger agents-btn" onclick="deleteAgent()">
-        <i class="fas fa-church"></i> Borrar
-      </button>
-      <button class="btn btn-secondary agents-btn" onclick="backToMenu()">
-        <i class="fas fa-door-open"></i> Salir
-      </button>
-      <button class="btn btn-info agents-btn" onclick="showReports()">
-        <i class="fas fa-file-alt"></i> Reportes
-      </button>
+
+    <table id="ingredientsTable">
+      <thead>
+        <tr>
+          <th>Ingrediente</th>
+          <th>Cantidad</th>
+          <th>Precio</th>
+          <th>Subtotal</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="ingredientsList">
+      </tbody>
+    </table>
+
+    <div class="cost-summary">
+      <h3>Resumen de Costos</h3>
+      <p>Costo total de ingredientes: $<span id="totalIngredientsCost">0.00</span></p>
+      <div>
+        <label>Costos adicionales:</label>
+        <input type="number" id="additionalCosts" onchange="calculateTotal()" value="0">
+      </div>
+      <div>
+        <label>Unidades a producir:</label>
+        <input type="number" id="units" onchange="calculateTotal()" value="1">
+      </div>
+      <h4>Costo unitario: $<span id="unitCost">0.00</span></h4>
+      <div>
+        <label>Margen de ganancia (%):</label>
+        <input type="number" id="profitMargin" onchange="calculateTotal()" value="30">
+      </div>
+      <h4>Precio de venta sugerido: $<span id="suggestedPrice">0.00</span></h4>
+
+      <div class="cost-categories">
+        <h4>Desglose de Costos Adicionales:</h4>
+        
+        <div class="cost-category">
+          <label>Gastos de Fabricación:</label>
+          <input type="number" id="manufacturingCosts" onchange="calculateTotal()" value="0" placeholder="Gastos de fabricación">
+          <select id="manufacturingPeriod" onchange="calculateTotal()">
+            <option value="daily">Diario</option>
+            <option value="weekly">Semanal</option>
+            <option value="monthly">Mensual</option>
+          </select>
+        </div>
+
+        <div class="cost-category">
+          <label>Gastos de Mano de Obra:</label>
+          <input type="number" id="laborCosts" onchange="calculateTotal()" value="0" placeholder="Gastos de mano de obra">
+          <select id="laborPeriod" onchange="calculateTotal()">
+            <option value="daily">Diario</option>
+            <option value="weekly">Semanal</option>
+            <option value="monthly">Mensual</option>
+          </select>
+        </div>
+
+        <div class="cost-category">
+          <label>Gastos Fijos:</label>
+          <input type="number" id="fixedCosts" onchange="calculateTotal()" value="0" placeholder="Gastos fijos">
+          <select id="fixedPeriod" onchange="calculateTotal()">
+            <option value="daily">Diario</option>
+            <option value="weekly">Semanal</option>
+            <option value="monthly">Mensual</option>
+          </select>
+        </div>
+      </div>
     </div>
-    <div class="agents-table-container">
-      <table class="agents-table">
+  </div>
+
+  <div id="inventoryTab" class="tab-content">
+    <div class="inventory-form">
+      <input type="text" id="materialName" placeholder="Nombre del material">
+      <input type="number" id="stock" placeholder="Stock actual">
+      <input type="number" id="minStock" placeholder="Stock mínimo">
+      <input type="number" id="materialPrice" placeholder="Precio unitario">
+      <button onclick="addMaterial()">Agregar Material</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th>Stock Actual</th>
+          <th>Stock Mínimo</th>
+          <th>Precio Unitario</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="materialsList">
+      </tbody>
+    </table>
+  </div>
+
+  <div id="recipesTab" class="tab-content">
+    <div class="recipe-form">
+      <input type="text" id="recipeName" placeholder="Nombre de la receta">
+      <input type="number" id="recipeYield" placeholder="Cantidad de unidades">
+      <select id="recipeIngredient">
+        <option value="">Seleccionar ingrediente</option>
+      </select>
+      <button onclick="addRecipe()">Crear Receta</button>
+    </div>
+
+    <div id="recipesList"></div>
+  </div>
+
+  <div id="productionTab" class="tab-content">
+    <div class="production-form">
+      <select id="productionRecipe" class="full-width">
+        <option value="">Seleccionar receta</option>
+      </select>
+      <input type="number" id="productionQuantity" placeholder="Cantidad a producir">
+      <button onclick="createProductionOrder()">Crear Orden de Producción</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Orden #</th>
+          <th>Receta</th>
+          <th>Cantidad</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="productionOrdersList">
+      </tbody>
+    </table>
+  </div>
+
+  <div id="finishedTab" class="tab-content">
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Stock Actual</th>
+          <th>Stock Mínimo</th>
+          <th>Costo Unitario</th>
+          <th>Precio de Venta</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="finishedProductsList">
+      </tbody>
+    </table>
+  </div>
+
+  <div id="kardexTab" class="tab-content">
+    <div style="margin-bottom: 20px;">
+      <select id="kardexType" onchange="updateKardexView()">
+        <option value="materials">Kardex de Materias Primas</option>
+        <option value="finished">Kardex de Productos Terminados</option>
+      </select>
+      <select id="kardexItem" onchange="generateKardexReport()">
+        <option value="">Seleccionar item</option>
+      </select>
+    </div>
+
+    <table id="kardexTable">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Descripción</th>
+          <th>Entrada</th>
+          <th>Salida</th>
+          <th>Existencia</th>
+          <th>Costo Unitario</th>
+          <th>Costo Total</th>
+        </tr>
+      </thead>
+      <tbody id="kardexList">
+      </tbody>
+    </table>
+  </div>
+
+  <div id="exitOrdersTab" class="tab-content">
+    <div class="production-form">
+      <select id="exitProduct" class="full-width">
+        <option value="">Seleccionar producto</option>
+      </select>
+      <input type="number" id="exitQuantity" placeholder="Cantidad de salida">
+      <input type="text" id="exitReason" placeholder="Motivo de salida">
+      <select id="exitSeller">
+        <option value="">Seleccionar Vendedor</option>
+      </select>
+      <button onclick="createExitOrder()">Crear Orden de Salida</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Orden #</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Motivo</th>
+          <th>Vendedor</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="exitOrdersList">
+      </tbody>
+    </table>
+  </div>
+
+  <div id="sellersTab" class="tab-content">
+    <div class="sellers-form">
+      <h3>Gestión de Vendedores</h3>
+      <div class="seller-input-form">
+        <input type="text" id="sellerName" placeholder="Nombre del vendedor">
+        <input type="text" id="sellerCode" placeholder="Código del vendedor">
+        <input type="text" id="sellerPhone" placeholder="Teléfono">
+        <input type="text" id="sellerEmail" placeholder="Email">
+        <button onclick="addSeller()">Agregar Vendedor</button>
+      </div>
+
+      <table>
         <thead>
           <tr>
-            <th>Foto</th>
+            <th>Código</th>
             <th>Nombre</th>
-            <th>DPI</th>
-            <th>No. Celular</th>
-            <th>Comunidad</th>
-            <th>Oratorio</th>
-            <th>Ministerio</th>
-            <th>Tiempo de Servicio</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="agentsTableBody">
+        <tbody id="sellersList">
         </tbody>
       </table>
-    </div>
-  </div>
 
-  <div id="attendanceContainer" class="agents-container">
-    <div class="text-center mb-4">
-      <h2>Control de Asistencia</h2>
-    </div>
-    <div class="buttons-row">
-      <button class="btn btn-success agents-btn" onclick="newAttendance()">
-        <i class="fas fa-calendar-plus"></i> Nueva Asistencia
-      </button>
-      <button class="btn btn-primary agents-btn" onclick="reportAttendance()">
-        <i class="fas fa-calendar-check"></i> Reporte de Asistencia
-      </button>
-      <button class="btn btn-secondary agents-btn" onclick="backToMenu()">
-        <i class="fas fa-door-open"></i> Salir
-      </button>
-    </div>
-  </div>
+      <div class="seller-settlements">
+        <h3>Liquidaciones de Vendedores</h3>
+        <div class="settlement-form">
+          <select id="settlementSeller" onchange="loadSellerSales()">
+            <option value="">Seleccionar Vendedor</option>
+          </select>
+          <input type="date" id="settlementDate" onchange="loadSellerSales()">
+        </div>
 
-  <div id="adminContainer" class="agents-container">
-    <div class="text-center mb-4">
-      <h2>Administración</h2>
-    </div>
-    <div class="buttons-row">
-      <button class="btn btn-primary agents-btn" onclick="showRegisterForm()">
-        <i class="fas fa-user-plus"></i> Nuevo Usuario
-      </button>
-      <button class="btn btn-secondary agents-btn" onclick="adminBackToMenu()">
-        <i class="fas fa-door-open"></i> Salir
-      </button>
+        <div id="sellerSalesSummary" style="margin: 20px 0;">
+          <!-- Sales summary will be populated here -->
+        </div>
+
+        <div class="returns-form">
+          <h4>Devolución de Productos</h4>
+          <select id="returnProduct">
+            <option value="">Seleccionar Producto</option>
+          </select>
+          <input type="number" id="returnQuantity" placeholder="Cantidad a devolver">
+          <button onclick="returnProducts()">Registrar Devolución</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-const users = [
-  {
-    username: 'Maynor',
-    password: '1977362013',
-    role: 'admin',
-    permissions: ['zona1', 'zona2', 'zona3', 'zona4', 'admin'] // Admin has all permissions by default
-  }
-];
+let ingredients = [];
+let inventory = [];
+let recipes = [];
+let productionOrders = [];
+let finishedProducts = [];
+let exitOrders = [];
+let exitOrderCounter = 1;
+let materialTransactions = [];
+let finishedProductTransactions = [];
+let orderCounter = 1;
+let sellers = [];
 
-const agentesDB = [];
-const ministeriosDB = [
-  "Catequista",
-  "Delegado", 
-  "Ministro E.S.C."
-];
-
-const actividadesDB = [
-  "Formación Mensual",
-  "Retiro Espiritual", 
-  "Reunión Extraordinaria"
-];
-
-// Function to save data to localStorage
-function saveToLocalStorage() {
-  localStorage.setItem('agentesDB', JSON.stringify(agentesDB));
-  localStorage.setItem('ministeriosDB', JSON.stringify(ministeriosDB));
-  localStorage.setItem('actividadesDB', JSON.stringify(actividadesDB));
-  localStorage.setItem('users', JSON.stringify(users));
-}
-
-// Function to load data from localStorage
-function loadFromLocalStorage() {
-  const savedAgentes = localStorage.getItem('agentesDB');
-  const savedMinisterios = localStorage.getItem('ministeriosDB');
-  const savedActividades = localStorage.getItem('actividadesDB');
-  const savedUsers = localStorage.getItem('users');
-
-  if (savedAgentes) {
-    agentesDB.length = 0; // Clear current array
-    agentesDB.push(...JSON.parse(savedAgentes));
-  }
-  
-  if (savedMinisterios) {
-    ministeriosDB.length = 0; // Clear current array
-    ministeriosDB.push(...JSON.parse(savedMinisterios));
-  }
-  
-  if (savedActividades) {
-    actividadesDB.length = 0; // Clear current array
-    actividadesDB.push(...JSON.parse(savedActividades));
-  }
-  
-  if (savedUsers) {
-    users.length = 0; // Clear current array
-    users.push(...JSON.parse(savedUsers));
-  }
-}
-
-// Add call to load data when page loads
-document.addEventListener('DOMContentLoaded', function() {
-  loadFromLocalStorage();
-  updateAgentsTable(); // Update table with loaded data
-});
-
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+function login() {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
+  const loginError = document.getElementById('loginError');
 
-  const user = users.find(u => u.username === username && u.password === password);
+  // Check credentials
+  if (username === 'Gabriela' && password === '1977362013') {
+    // Hide login screen
+    document.getElementById('loginScreen').style.display = 'none';
+    // Show main container
+    document.querySelector('.container').style.display = 'block';
+    // Load settings after successful login
+    loadSettings();
+    // Load saved data
+    loadDataFromLocalStorage();
+    // Add data saving listeners
+    addDataSavingListeners();
+  } else {
+    // Show error message
+    loginError.style.display = 'block';
+    // Clear password field
+    document.getElementById('password').value = '';
+  }
+}
 
-  if (user) {
-    // Store current user info in sessionStorage
-    sessionStorage.setItem('currentUser', JSON.stringify({
-      username: user.username,
-      role: user.role,
-      permissions: user.permissions
-    }));
+// Prevent accessing the system without login
+document.addEventListener('DOMContentLoaded', function() {
+  // Hide main container initially
+  document.querySelector('.container').style.display = 'none';
+  // Clear any previous login
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  document.getElementById('loginError').style.display = 'none';
+});
 
-    // Update header with current user
-    document.getElementById('currentUserDisplay').textContent = user.username;
+// Modify the loadSettings function to only work after login
+function loadSettings() {
+  // Check if user is logged in (main container is visible)
+  if (document.querySelector('.container').style.display !== 'block') {
+    return;
+  }
+  // Rest of the loadSettings function remains the same...
+}
 
-    document.getElementById('loginContainer').style.display = 'none';
-    document.getElementById('menuContainer').style.display = 'block';
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  
+  document.getElementById(tabName + 'Tab').classList.add('active');
+  event.target.classList.add('active');
+
+  // Update tab icons
+  const tabIcons = {
+    'settings': '⚙️',
+    'costs': '💰',
+    'inventory': '📦',
+    'recipes': '📝',
+    'production': '🏭',
+    'finished': '🥖',
+    'kardex': '📊',
+    'exitOrders': '🚚',
+    'sellers': '👥'
+  };
+  
+  document.querySelectorAll('.tab').forEach(tab => {
+    const tabText = tab.textContent;
+    Object.entries(tabIcons).forEach(([key, icon]) => {
+      if (tabText.includes(key)) {
+        tab.innerHTML = `${icon} ${tabText}`;
+      }
+    });
+  });
+
+  if (tabName === 'recipes') {
+    updateRecipeIngredientsList();
+  } else if (tabName === 'production') {
+    updateProductionRecipesList();
+  } else if (tabName === 'finished') {
+    updateFinishedProductsList();
+  } else if (tabName === 'kardex') {
+    updateKardexView();
+  } else if (tabName === 'exitOrders') {
+    updateExitProductsList();
+    updateSellersList(); // Add this line
+  }
+}
+
+function updateExitProductsList() {
+  const select = document.getElementById('exitProduct');
+  select.innerHTML = '<option value="">Seleccionar producto</option>';
+  
+  finishedProducts.forEach(product => {
+    const option = document.createElement('option');
+    option.value = product.name;
+    option.textContent = product.name;
+    select.appendChild(option);
+  });
+}
+
+function addIngredient() {
+  const name = document.getElementById('ingredientName').value;
+  const quantity = parseFloat(document.getElementById('ingredientQuantity').value);
+  const price = parseFloat(document.getElementById('ingredientPrice').value);
+
+  if (name && quantity && price) {
+    ingredients.push({
+      name,
+      quantity,
+      price,
+      subtotal: quantity * price
+    });
+
+    updateIngredientsTable();
+    calculateTotal();
+    clearForm('ingredient');
+  } else {
+    alert('Por favor complete todos los campos');
+  }
+}
+
+function addMaterial() {
+  const name = document.getElementById('materialName').value;
+  const stock = parseFloat(document.getElementById('stock').value);
+  const minStock = parseFloat(document.getElementById('minStock').value);
+  const price = parseFloat(document.getElementById('materialPrice').value);
+
+  if (name && stock && minStock && price) {
+    inventory.push({
+      name,
+      stock,
+      minStock,
+      price
+    });
+
+    updateMaterialsTable();
+    clearForm('material');
+  } else {
+    alert('Por favor complete todos los campos');
+  }
+}
+
+function updateMaterialsTable() {
+  const tbody = document.getElementById('materialsList');
+  tbody.innerHTML = '';
+  
+  inventory.forEach((material, index) => {
+    const status = material.stock <= material.minStock ? 
+      '<span class="warning">Stock bajo</span>' : 
+      'OK';
     
-    // Hide unauthorized buttons
-    if (user.role !== 'admin') {
-      const buttons = document.querySelectorAll('.menu-btn');
-      buttons.forEach(btn => {
-        const permission = btn.getAttribute('data-permission');
-        if (permission && !user.permissions.includes(permission)) {
-          btn.style.display = 'none';
-        }
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${material.name}</td>
+      <td>${material.stock}</td>  
+      <td>${material.minStock}</td>
+      <td>$${material.price.toFixed(2)}</td>
+      <td>${status}</td>
+      <td>
+        <button onclick="adjustInventory('material', ${index})">Ajustar</button>
+        <button onclick="deleteMaterial(${index})">Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function deleteMaterial(index) {
+  if (confirm('¿Está seguro que desea eliminar este material?')) {
+    inventory.splice(index, 1);
+    updateMaterialsTable();
+    saveDataToLocalStorage(); // Save changes to localStorage
+  }
+}
+
+function adjustInventory(type, index) {
+  const item = type === 'material' ? inventory[index] : finishedProducts[index];
+  const adjustment = parseFloat(prompt(`Ingrese el ajuste de inventario para ${item.name}:\n(Use números positivos para aumentar, negativos para disminuir)`));
+  
+  if (isNaN(adjustment)) {
+    alert('Por favor ingrese un número válido');
+    return;
+  }
+
+  const reason = prompt('Ingrese el motivo del ajuste:');
+  if (!reason) {
+    alert('Debe ingresar un motivo para el ajuste');
+    return;
+  }
+
+  const newStock = item.stock + adjustment;
+  if (newStock < 0) {
+    alert('El ajuste no puede resultar en un inventario negativo');
+    return;
+  }
+
+  // Record the transaction in the appropriate kardex
+  const transaction = {
+    date: new Date(),
+    type: adjustment > 0 ? 'entrada' : 'salida',
+    description: `Ajuste de inventario - ${reason}`,
+    quantity: Math.abs(adjustment),
+    balance: newStock,
+    unitCost: type === 'material' ? item.price : item.lastUnitCost,
+    itemName: item.name
+  };
+
+  if (type === 'material') {
+    materialTransactions.push(transaction);
+    inventory[index].stock = newStock;
+    updateMaterialsTable();
+  } else {
+    finishedProductTransactions.push(transaction);
+    finishedProducts[index].stock = newStock;
+    updateFinishedProductsList();
+  }
+
+  updateKardexView();
+  saveDataToLocalStorage();
+  alert('Ajuste de inventario realizado con éxito');
+}
+
+function addRecipe() {
+  const name = document.getElementById('recipeName').value;
+  const yield_ = parseFloat(document.getElementById('recipeYield').value);
+  
+  if (name && yield_) {
+    const recipe = {
+      name,
+      yield: yield_,
+      ingredients: [],
+      manufacturingCosts: 0,
+      manufacturingPeriod: 'daily',
+      laborCosts: 0,
+      laborPeriod: 'daily',
+      fixedCosts: 0,
+      fixedPeriod: 'daily',
+      profitMargin: 30 // Add default profit margin
+    };
+    
+    recipes.push(recipe);
+    updateRecipesList();
+    clearForm('recipe');
+  } else {
+    alert('Por favor complete el nombre y cantidad de la receta');
+  }
+}
+
+function addIngredientToRecipe(recipeIndex) {
+  const ingredientSelect = document.getElementById('recipeIngredient');
+  const quantity = parseFloat(prompt('Ingrese la cantidad necesaria:'));
+  
+  if (quantity && ingredientSelect.value) {
+    const ingredient = inventory.find(i => i.name === ingredientSelect.value);
+    if (ingredient) {
+      recipes[recipeIndex].ingredients.push({
+        name: ingredient.name,
+        quantity: quantity,
+        price: ingredient.price
+      });
+      updateRecipesList();
+    }
+  }
+}
+
+function updateRecipeIngredientsList() {
+  const select = document.getElementById('recipeIngredient');
+  select.innerHTML = '<option value="">Seleccionar ingrediente</option>';
+  
+  inventory.forEach(material => {
+    const option = document.createElement('option');
+    option.value = material.name;
+    option.textContent = material.name;
+    select.appendChild(option);
+  });
+}
+
+function updateRecipesList() {
+  const container = document.getElementById('recipesList');
+  container.innerHTML = '';
+  
+  recipes.forEach((recipe, index) => {
+    const recipeDiv = document.createElement('div');
+    recipeDiv.className = 'recipe-container';
+    recipeDiv.id = `recipe${index}`;
+    
+    let ingredientsCost = 0;
+    let ingredientsList = '';
+    
+    recipe.ingredients.forEach(ing => {
+      const cost = ing.quantity * ing.price;
+      ingredientsCost += cost;
+      ingredientsList += `
+        <div>${ing.name} - ${ing.quantity} unidades - $${cost.toFixed(2)}</div>
+      `;
+    });
+
+    const dailyManufacturing = convertToDailyCost(recipe.manufacturingCosts || 0, recipe.manufacturingPeriod);
+    const dailyLabor = convertToDailyCost(recipe.laborCosts || 0, recipe.laborPeriod);
+    const dailyFixed = convertToDailyCost(recipe.fixedCosts || 0, recipe.fixedPeriod);
+    
+    const totalAdditionalCosts = dailyManufacturing + dailyLabor + dailyFixed;
+    const totalCost = ingredientsCost + totalAdditionalCosts;
+    const unitCost = totalCost / recipe.yield;
+    
+    const profitMargin = recipe.profitMargin || 30;
+    const suggestedPrice = unitCost * (1 + profitMargin/100);
+
+    recipeDiv.innerHTML = `
+      <div class="recipe-header">
+        <h3>${recipe.name}</h3>
+        <button onclick="editRecipe(${index})" class="edit-button">✏️ Editar</button>
+      </div>
+      <p>Rendimiento: ${recipe.yield} unidades</p>
+      <div class="recipe-ingredients">
+        <h4>Ingredientes:</h4>
+        ${ingredientsList}
+      </div>
+      
+      <div class="cost-categories">
+        <h4>Costos Adicionales:</h4>
+        <div class="cost-category">
+          <label>Gastos de Fabricación:</label>
+          <input type="number" value="${recipe.manufacturingCosts || 0}" 
+                 onchange="updateRecipeCosts(${index}, 'manufacturing', this.value)">
+          <select onchange="updateRecipePeriod(${index}, 'manufacturing', this.value)">
+            <option value="daily" ${recipe.manufacturingPeriod === 'daily' ? 'selected' : ''}>Diario</option>
+            <option value="weekly" ${recipe.manufacturingPeriod === 'weekly' ? 'selected' : ''}>Semanal</option>
+            <option value="monthly" ${recipe.manufacturingPeriod === 'monthly' ? 'selected' : ''}>Mensual</option>
+          </select>
+        </div>
+        
+        <div class="cost-category">
+          <label>Gastos de Mano de Obra:</label>
+          <input type="number" value="${recipe.laborCosts || 0}"
+                 onchange="updateRecipeCosts(${index}, 'labor', this.value)">
+          <select onchange="updateRecipePeriod(${index}, 'labor', this.value)">
+            <option value="daily" ${recipe.laborPeriod === 'daily' ? 'selected' : ''}>Diario</option>
+            <option value="weekly" ${recipe.laborPeriod === 'weekly' ? 'selected' : ''}>Semanal</option>
+            <option value="monthly" ${recipe.laborPeriod === 'monthly' ? 'selected' : ''}>Mensual</option>
+          </select>
+        </div>
+        
+        <div class="cost-category">
+          <label>Gastos Fijos:</label>
+          <input type="number" value="${recipe.fixedCosts || 0}"
+                 onchange="updateRecipeCosts(${index}, 'fixed', this.value)">
+          <select onchange="updateRecipePeriod(${index}, 'fixed', this.value)">
+            <option value="daily" ${recipe.fixedPeriod === 'daily' ? 'selected' : ''}>Diario</option>
+            <option value="weekly" ${recipe.fixedPeriod === 'weekly' ? 'selected' : ''}>Semanal</option>
+            <option value="monthly" ${recipe.fixedPeriod === 'monthly' ? 'selected' : ''}>Mensual</option>
+          </select>
+        </div>
+      </div>
+      
+      <p>Costo de ingredientes: $${ingredientsCost.toFixed(2)}</p>
+      <p>Costos adicionales diarios: $${totalAdditionalCosts.toFixed(2)}</p>
+      <p>Costo total: $${totalCost.toFixed(2)}</p>
+      <p>Costo por unidad: $${unitCost.toFixed(2)}</p>
+      
+      <div class="cost-category">
+        <label>Margen de utilidad (%):</label>
+        <input type="number" value="${recipe.profitMargin || 30}" 
+               onchange="updateRecipeMargin(${index}, this.value)">
+      </div>
+      <p><strong>Precio de venta sugerido (${profitMargin}% margen):</strong> $${suggestedPrice.toFixed(2)}</p>
+      
+      <button onclick="addIngredientToRecipe(${index})">Agregar Ingrediente</button>
+    `;
+    
+    container.appendChild(recipeDiv);
+  });
+}
+
+function editRecipe(index) {
+  const recipe = recipes[index];
+  
+  // Create edit form HTML
+  const editForm = `
+    <div class="recipe-edit-form">
+      <h4>Editar Receta</h4>
+      <div class="edit-fields">
+        <label>Nombre:</label>
+        <input type="text" id="editRecipeName${index}" value="${recipe.name}">
+        
+        <label>Rendimiento (unidades):</label>
+        <input type="number" id="editRecipeYield${index}" value="${recipe.yield}">
+      </div>
+
+      <div class="recipe-ingredients-edit">
+        <h4>Ingredientes</h4>
+        ${recipe.ingredients.map((ing, ingIndex) => `
+          <div class="ingredient-edit-row">
+            <input type="text" value="${ing.name}" readonly>
+            <input type="number" id="editIngQuantity${index}_${ingIndex}" 
+              value="${ing.quantity}" placeholder="Cantidad">
+            <button onclick="removeIngredientFromRecipe(${index}, ${ingIndex})">
+              🗑️ Eliminar
+            </button>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div class="edit-buttons">
+        <button onclick="saveRecipeEdit(${index})">💾 Guardar Cambios</button>
+        <button onclick="cancelRecipeEdit(${index})">❌ Cancelar</button>
+      </div>
+    </div>
+  `;
+  
+  // Replace recipe display with edit form
+  document.querySelector(`#recipe${index}`).innerHTML = editForm;
+}
+
+function removeIngredientFromRecipe(recipeIndex, ingredientIndex) {
+  recipes[recipeIndex].ingredients.splice(ingredientIndex, 1);
+  updateRecipesList();
+}
+
+function saveRecipeEdit(index) {
+  const recipe = recipes[index];
+  const newName = document.getElementById(`editRecipeName${index}`).value;
+  const newYield = parseInt(document.getElementById(`editRecipeYield${index}`).value);
+  
+  if (!newName || !newYield) {
+    alert('Por favor complete todos los campos obligatorios');
+    return;
+  }
+  
+  recipe.name = newName;
+  recipe.yield = newYield;
+  
+  // Update ingredient quantities
+  recipe.ingredients.forEach((ing, ingIndex) => {
+    const newQuantity = parseFloat(document.getElementById(`editIngQuantity${index}_${ingIndex}`).value);
+    if (newQuantity) {
+      ing.quantity = newQuantity;
+    }
+  });
+  
+  updateRecipesList();
+}
+
+function cancelRecipeEdit(index) {
+  updateRecipesList();
+}
+
+function calculateTotal() {
+  const totalIngredients = ingredients.reduce((sum, ing) => sum + ing.subtotal, 0);
+  
+  // Get values from inputs
+  const manufacturingCosts = parseFloat(document.getElementById('manufacturingCosts').value) || 0;
+  const laborCosts = parseFloat(document.getElementById('laborCosts').value) || 0;
+  const fixedCosts = parseFloat(document.getElementById('fixedCosts').value) || 0;
+  
+  // Get period selections
+  const manufacturingPeriod = document.getElementById('manufacturingPeriod').value;
+  const laborPeriod = document.getElementById('laborPeriod').value;
+  const fixedPeriod = document.getElementById('fixedPeriod').value;
+  
+  // Convert all costs to daily basis
+  const dailyManufacturing = convertToDailyCost(manufacturingCosts, manufacturingPeriod);
+  const dailyLabor = convertToDailyCost(laborCosts, laborPeriod);
+  const dailyFixed = convertToDailyCost(fixedCosts, fixedPeriod);
+  
+  const units = parseInt(document.getElementById('units').value) || 1;
+  const profitMargin = parseFloat(document.getElementById('profitMargin').value) || 0;
+
+  const totalAdditionalCosts = dailyManufacturing + dailyLabor + dailyFixed;
+  const totalCost = totalIngredients + totalAdditionalCosts;
+  const unitCost = totalCost / units;
+  const suggestedPrice = unitCost * (1 + profitMargin/100);
+
+  // Update display
+  document.getElementById('totalIngredientsCost').textContent = totalIngredients.toFixed(2);
+  document.getElementById('unitCost').textContent = unitCost.toFixed(2);
+  document.getElementById('suggestedPrice').textContent = suggestedPrice.toFixed(2);
+}
+
+// Add this helper function to convert costs to daily basis
+function convertToDailyCost(cost, period) {
+  switch(period) {
+    case 'daily':
+      return cost;
+    case 'weekly':
+      return cost / 7;
+    case 'monthly':
+      return cost / 30;
+    default:
+      return cost;
+  }
+}
+
+// Add the following functions for production orders
+function updateProductionRecipesList() {
+  const select = document.getElementById('productionRecipe');
+  select.innerHTML = '<option value="">Seleccionar receta</option>';
+  
+  recipes.forEach((recipe, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = recipe.name;
+    select.appendChild(option);
+  });
+}
+
+function checkInventoryAvailability(recipe, quantity) {
+  const missing = [];
+  
+  recipe.ingredients.forEach(ingredient => {
+    const inventoryItem = inventory.find(item => item.name === ingredient.name);
+    if (!inventoryItem) {
+      missing.push(`${ingredient.name} no existe en inventario`);
+    } else if (inventoryItem.stock < (ingredient.quantity * quantity)) {
+      missing.push(`${ingredient.name} - Stock insuficiente (Necesario: ${ingredient.quantity * quantity}, Disponible: ${inventoryItem.stock})`);
+    }
+  });
+  
+  return missing;
+}
+
+function deductInventory(recipe, quantity) {
+  recipe.ingredients.forEach(ingredient => {
+    const inventoryItem = inventory.find(item => item.name === ingredient.name);
+    if (inventoryItem) {
+      inventoryItem.stock -= (ingredient.quantity * quantity);
+    }
+  });
+  updateMaterialsTable();
+}
+
+function createProductionOrder() {
+  const recipeIndex = document.getElementById('productionRecipe').value;
+  const quantity = parseInt(document.getElementById('productionQuantity').value);
+  
+  if (!recipeIndex || !quantity) {
+    alert('Por favor seleccione una receta y especifique la cantidad');
+    return;
+  }
+  
+  const recipe = recipes[recipeIndex];
+  const inventoryCheck = checkInventoryAvailability(recipe, quantity);
+  
+  if (inventoryCheck.length > 0) {
+    alert('No se puede crear la orden:\n' + inventoryCheck.join('\n'));
+    return;
+  }
+  
+  const order = {
+    id: orderCounter++,
+    recipeIndex: parseInt(recipeIndex),
+    recipeName: recipe.name,
+    quantity: quantity,
+    status: 'pending'
+  };
+  
+  productionOrders.push(order);
+  updateProductionOrdersList();
+  document.getElementById('productionQuantity').value = '';
+}
+
+function completeOrder(orderId) {
+  const order = productionOrders.find(o => o.id === orderId);
+  if (order && order.status === 'pending') {
+    const recipe = recipes[order.recipeIndex];
+    
+    // Record material exits
+    recipe.ingredients.forEach(ingredient => {
+      const inventoryItem = inventory.find(item => item.name === ingredient.name);
+      if (inventoryItem) {
+        const quantity = ingredient.quantity * order.quantity;
+        materialTransactions.push({
+          date: new Date(),
+          type: 'salida',
+          description: `Orden de producción #${order.id}`,
+          quantity: quantity,
+          balance: inventoryItem.stock - quantity,
+          unitCost: inventoryItem.price,
+          itemName: ingredient.name
+        });
+      }
+    });
+    
+    deductInventory(recipe, order.quantity);
+    order.status = 'completed';
+    
+    // Calculate total unit cost including all costs
+    const totalUnitCost = calculateRecipeUnitCost(recipe.name);
+    
+    // Record finished product entry with total unit cost
+    finishedProductTransactions.push({
+      date: new Date(),
+      type: 'entrada',
+      description: `Orden de producción #${order.id} (incluye costos adicionales)`,
+      quantity: order.quantity,
+      balance: (finishedProducts.find(p => p.name === recipe.name)?.stock || 0) + order.quantity,
+      unitCost: totalUnitCost,
+      itemName: recipe.name
+    });
+    
+    updateFinishedInventory(recipe.name, order.quantity, totalUnitCost);
+    updateProductionOrdersList();
+    updateFinishedProductsList();
+  }
+}
+
+function cancelOrder(orderId) {
+  const order = productionOrders.find(o => o.id === orderId);
+  if (order && order.status === 'pending') {
+    order.status = 'cancelled';
+    updateProductionOrdersList();
+  }
+}
+
+function updateFinishedInventory(productName, quantity, totalUnitCost) {
+  let product = finishedProducts.find(p => p.name === productName);
+  const recipe = recipes.find(r => r.name === productName);
+  const profitMargin = recipe ? recipe.profitMargin : 30; // Default 30% if no recipe found
+  const sellingPrice = totalUnitCost * (1 + profitMargin / 100);
+  
+  if (product) {
+    product.stock += quantity;
+    product.lastUnitCost = totalUnitCost;
+    product.sellingPrice = sellingPrice; // Add selling price
+  } else {
+    finishedProducts.push({
+      name: productName,
+      stock: quantity,
+      minStock: 10,
+      lastUnitCost: totalUnitCost,
+      sellingPrice: sellingPrice // Add selling price
+    });
+  }
+}
+
+function calculateRecipeUnitCost(recipeName) {
+  const recipe = recipes.find(r => r.name === recipeName);
+  if (!recipe) return 0;
+  
+  // Calculate ingredients cost
+  let ingredientsCost = 0;
+  recipe.ingredients.forEach(ing => {
+    const inventoryItem = inventory.find(item => item.name === ing.name);
+    if (inventoryItem) {
+      ingredientsCost += ing.quantity * inventoryItem.price;
+    }
+  });
+
+  // Calculate daily additional costs
+  const dailyManufacturing = convertToDailyCost(recipe.manufacturingCosts || 0, recipe.manufacturingPeriod);
+  const dailyLabor = convertToDailyCost(recipe.laborCosts || 0, recipe.laborPeriod);
+  const dailyFixed = convertToDailyCost(recipe.fixedCosts || 0, recipe.fixedPeriod);
+  
+  const totalAdditionalCosts = dailyManufacturing + dailyLabor + dailyFixed;
+  const totalCost = ingredientsCost + totalAdditionalCosts;
+  
+  return totalCost / recipe.yield;
+}
+
+function updateFinishedProductsList() {
+  const tbody = document.getElementById('finishedProductsList');
+  tbody.innerHTML = '';
+  
+  finishedProducts.forEach((product, index) => {
+    const status = product.stock <= product.minStock ? 
+      '<span class="warning">Stock bajo</span>' : 
+      'OK';
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${product.name}</td>
+      <td>${product.stock}</td>
+      <td>${product.minStock}</td>
+      <td>$${product.lastUnitCost.toFixed(2)}</td>
+      <td>$${product.sellingPrice.toFixed(2)}</td>
+      <td>${status}</td>
+      <td>
+        <button onclick="adjustInventory('finished', ${index})">Ajustar</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function updateProductionOrdersList() {
+  const tbody = document.getElementById('productionOrdersList');
+  tbody.innerHTML = '';
+  
+  productionOrders.forEach(order => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${order.id}</td>
+      <td>${order.recipeName}</td>
+      <td>${order.quantity}</td>
+      <td><span class="status-${order.status}">${order.status}</span></td>
+      <td>
+        ${order.status === 'pending' ? `
+          <button onclick="completeOrder(${order.id})">Completar</button>
+          <button onclick="cancelOrder(${order.id})">Cancelar</button>
+        ` : ''}
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function updateKardexView() {
+  const type = document.getElementById('kardexType').value;
+  const select = document.getElementById('kardexItem');
+  select.innerHTML = '<option value="">Seleccionar item</option>';
+  
+  if (type === 'materials') {
+    inventory.forEach(material => {
+      const option = document.createElement('option');
+      option.value = material.name;
+      option.textContent = material.name;
+      select.appendChild(option);
+    });
+  } else {
+    finishedProducts.forEach(product => {
+      const option = document.createElement('option');
+      option.value = product.name;
+      option.textContent = product.name;
+      select.appendChild(option);
+    });
+  }
+}
+
+function generateTotalInventoryReport() {
+  // Option buttons for format selection
+  const formatChoice = confirm('¿Desea generar el reporte en PDF? \nPresione OK para PDF o Cancel para HTML');
+  
+  if (formatChoice) {
+    generatePDFReport();
+  } else {
+    generateHTMLReport();
+  }
+}
+
+function generatePDFReport() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Title
+  doc.setFontSize(16);
+  doc.text('Reporte de Inventario Total', 14, 20);
+  doc.setFontSize(11);
+  doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 30);
+
+  // Materias Primas Table
+  doc.text('Inventario de Materias Primas', 14, 40);
+  
+  const materialsTableData = inventory.map(material => [
+    material.name,
+    material.stock.toString(),
+    material.minStock.toString(),
+    `$${material.price.toFixed(2)}`,
+    `$${(material.stock * material.price).toFixed(2)}`
+  ]);
+
+  let materialsTotalValue = inventory.reduce((sum, material) => 
+    sum + (material.stock * material.price), 0);
+
+  materialsTableData.push([
+    'TOTAL',
+    '',
+    '',
+    '',
+    `$${materialsTotalValue.toFixed(2)}`
+  ]);
+
+  doc.autoTable({
+    startY: 45,
+    head: [['Material', 'Stock Actual', 'Stock Mínimo', 'Costo Unitario', 'Valor Total']],
+    body: materialsTableData,
+    theme: 'striped',
+    headStyles: { fillColor: [139, 69, 19] }
+  });
+
+  // Productos Terminados Table
+  doc.text('Inventario de Productos Terminados', 14, doc.lastAutoTable.finalY + 15);
+
+  const productsTableData = finishedProducts.map(product => [
+    product.name,
+    product.stock.toString(),
+    product.minStock.toString(),
+    `$${product.lastUnitCost.toFixed(2)}`,
+    `$${product.sellingPrice.toFixed(2)}`,
+    `$${(product.stock * product.lastUnitCost).toFixed(2)}`,
+    `$${(product.stock * product.sellingPrice).toFixed(2)}`
+  ]);
+
+  let finishedTotalValue = finishedProducts.reduce((sum, product) => 
+    sum + (product.stock * product.lastUnitCost), 0);
+  let finishedTotalSalesValue = finishedProducts.reduce((sum, product) => 
+    sum + (product.stock * product.sellingPrice), 0);
+  
+  // Calculate total profit
+  let totalProfit = finishedTotalSalesValue - finishedTotalValue;
+  let profitPercentage = ((finishedTotalSalesValue - finishedTotalValue) / finishedTotalValue * 100);
+
+  productsTableData.push([
+    'TOTAL',
+    '',
+    '',
+    '',
+    '',
+    `$${finishedTotalValue.toFixed(2)}`,
+    `$${finishedTotalSalesValue.toFixed(2)}`
+  ]);
+
+  doc.autoTable({
+    startY: doc.lastAutoTable.finalY + 20,
+    head: [['Producto', 'Stock', 'Stock Min', 'Costo Unit', 'Precio Venta', 'Valor Total (Costo)', 'Valor Total (Venta)']],
+    body: productsTableData,
+    theme: 'striped',
+    headStyles: { fillColor: [139, 69, 19] },
+    styles: { fontSize: 8 }
+  });
+
+  // Summary with profit calculation
+  doc.text('Resumen de Inventario', 14, doc.lastAutoTable.finalY + 15);
+  doc.text(`Valor Total de Materias Primas: $${materialsTotalValue.toFixed(2)}`, 14, doc.lastAutoTable.finalY + 25);
+  doc.text(`Valor Total de Productos Terminados (Costo): $${finishedTotalValue.toFixed(2)}`, 14, doc.lastAutoTable.finalY + 35);
+  doc.text(`Valor Total de Productos Terminados (Venta): $${finishedTotalSalesValue.toFixed(2)}`, 14, doc.lastAutoTable.finalY + 45);
+  doc.text(`Valor Total del Inventario (Costo): $${(materialsTotalValue + finishedTotalValue).toFixed(2)}`, 14, doc.lastAutoTable.finalY + 55);
+  
+  // Add profit information
+  doc.text('Análisis de Utilidad', 14, doc.lastAutoTable.finalY + 70);
+  doc.text(`Utilidad Total: $${totalProfit.toFixed(2)}`, 14, doc.lastAutoTable.finalY + 80);
+  doc.text(`Porcentaje de Utilidad: ${profitPercentage.toFixed(2)}%`, 14, doc.lastAutoTable.finalY + 90);
+
+  // Save PDF
+  doc.save('reporte-inventario.pdf');
+}
+
+function generateHTMLReport() {
+  const reportWindow = window.open('', '_blank');
+  // ... (rest of the original HTML report generation code)
+}
+
+function generateKardexReport() {
+  const type = document.getElementById('kardexType').value;
+  const itemName = document.getElementById('kardexItem').value;
+  
+  // Option buttons for format selection
+  const formatChoice = confirm('¿Desea generar el reporte en PDF? \nPresione OK para PDF o Cancel para HTML');
+  
+  if (formatChoice) {
+    generateKardexPDFReport(type, itemName);
+  } else {
+    generateKardexHTMLReport(type, itemName);
+  }
+}
+
+function generateKardexPDFReport(type, itemName) {
+  if (!itemName) {
+    alert('Por favor seleccione un item');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  const transactions = type === 'materials' 
+    ? materialTransactions.filter(t => t.itemName === itemName)
+    : finishedProductTransactions.filter(t => t.itemName === itemName);
+
+  // Title
+  doc.setFontSize(16);
+  doc.text(`Reporte de Kardex - ${itemName}`, 14, 20);
+  doc.setFontSize(11);
+  doc.text(`Tipo: ${type === 'materials' ? 'Materias Primas' : 'Productos Terminados'}`, 14, 30);
+  doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 40);
+
+  const tableData = transactions.map(t => [
+    t.date.toLocaleDateString(),
+    t.type.toUpperCase(),
+    t.description,
+    t.type === 'entrada' ? t.quantity.toString() : '',
+    t.type === 'salida' ? t.quantity.toString() : '',
+    t.balance.toString(),
+    `$${t.unitCost.toFixed(2)}`,
+    `$${(t.quantity * t.unitCost).toFixed(2)}`
+  ]);
+
+  doc.autoTable({
+    startY: 45,
+    head: [['Fecha', 'Tipo', 'Descripción', 'Entrada', 'Salida', 'Existencia', 'Costo Unit', 'Costo Total']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [139, 69, 19] }
+  });
+
+  // Save PDF
+  doc.save(`kardex-${itemName}.pdf`);
+}
+
+// Rename the original Kardex HTML report function
+function generateKardexHTMLReport(type, itemName) {
+  const tbody = document.getElementById('kardexList');
+  tbody.innerHTML = '';
+  // ... (rest of the original Kardex HTML report generation code)
+}
+
+// Add function to create exit order
+function createExitOrder() {
+  const productName = document.getElementById('exitProduct').value;
+  const quantity = parseInt(document.getElementById('exitQuantity').value);
+  const reason = document.getElementById('exitReason').value;
+  const seller = document.getElementById('exitSeller').value; // New field
+
+  if (!productName || !quantity || !reason || !seller) { // Added seller validation
+    alert('Por favor complete todos los campos');
+    return;
+  }
+
+  const product = finishedProducts.find(p => p.name === productName);
+  if (!product) {
+    alert('Producto no encontrado');
+    return;
+  }
+
+  if (product.stock < quantity) {
+    alert('Stock insuficiente');
+    return;
+  }
+
+  const order = {
+    id: exitOrderCounter++,
+    product: productName,
+    quantity: quantity,
+    reason: reason,
+    seller: seller, // New field
+    date: new Date(),
+    status: 'pending'
+  };
+
+  exitOrders.push(order);
+  updateExitOrdersList();
+  
+  // Clear form
+  document.getElementById('exitProduct').value = '';
+  document.getElementById('exitQuantity').value = '';
+  document.getElementById('exitReason').value = '';
+  document.getElementById('exitSeller').value = ''; // Clear seller field
+}
+
+function updateExitOrdersList() {
+  const tbody = document.getElementById('exitOrdersList');
+  tbody.innerHTML = '';
+  
+  exitOrders.forEach(order => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${order.id}</td>
+      <td>${order.product}</td>
+      <td>${order.quantity}</td>
+      <td>${order.reason}</td>
+      <td>${order.seller}</td> <!-- New column -->
+      <td>${order.date.toLocaleDateString()}</td>
+      <td><span class="status-${order.status}">${order.status}</span></td>
+      <td>
+        ${order.status === 'pending' ? `
+          <button onclick="completeExitOrder(${order.id})">Completar</button>
+          <button onclick="cancelExitOrder(${order.id})">Cancelar</button>
+        ` : ''}
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Complete exit order function
+function completeExitOrder(orderId) {
+  const order = exitOrders.find(o => o.id === orderId);
+  if (order && order.status === 'pending') {
+    const product = finishedProducts.find(p => p.name === order.product);
+    
+    if (product && product.stock >= order.quantity) {
+      // Update finished product stock
+      product.stock -= order.quantity;
+      
+      // Add transaction to kardex
+      finishedProductTransactions.push({
+        date: new Date(),
+        type: 'salida',
+        description: `Orden de salida #${order.id} - ${order.reason} - Vendedor: ${order.seller}`,
+        quantity: order.quantity,
+        balance: product.stock,
+        unitCost: product.lastUnitCost,
+        itemName: order.product
+      });
+      
+      // Update order status
+      order.status = 'completed';
+      
+      // Update displays
+      updateExitOrdersList();
+      updateFinishedProductsList();
+      updateKardexView();
+      
+      // Alert success
+      alert(`Orden de salida #${order.id} completada exitosamente`);
+    } else {
+      alert('Error: Stock insuficiente para completar la orden');
+    }
+  }
+}
+
+function cancelExitOrder(orderId) {
+  const order = exitOrders.find(o => o.id === orderId);
+  if (order && order.status === 'pending') {
+    order.status = 'cancelled';
+    updateExitOrdersList();
+    alert(`Orden de salida #${order.id} cancelada`);
+  }
+}
+
+function returnProducts() {
+  const productName = document.getElementById('returnProduct').value;
+  const quantity = parseInt(document.getElementById('returnQuantity').value);
+  const seller = document.getElementById('settlementSeller').value;
+  
+  if (!productName || !quantity || !seller) {
+    alert('Por favor complete todos los campos para la devolución');
+    return;
+  }
+  
+  const product = finishedProducts.find(p => p.name === productName);
+  if (product) {
+    // Update stock
+    product.stock += quantity;
+    
+    // Add transaction to kardex
+    finishedProductTransactions.push({
+      date: new Date(),
+      type: 'entrada',
+      description: `Devolución de producto - Vendedor: ${seller}`,
+      quantity: quantity,
+      balance: product.stock,
+      unitCost: product.lastUnitCost,
+      itemName: productName
+    });
+    
+    // Update displays
+    updateFinishedProductsList();
+    updateKardexView();
+    
+    // Clear form
+    document.getElementById('returnProduct').value = '';
+    document.getElementById('returnQuantity').value = '';
+    
+    alert(`Devolución registrada exitosamente: ${quantity} unidades de ${productName}`);
+  }
+}
+
+// Modify updateSellersList to also update return product dropdown
+function updateSellersList() {
+  const tbody = document.getElementById('sellersList');
+  tbody.innerHTML = '';
+
+  sellers.forEach((seller, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${seller.code}</td>
+      <td>${seller.name}</td>
+      <td>${seller.phone}</td>
+      <td>${seller.email}</td>
+      <td><span class="status-${seller.status}">${seller.status}</span></td>
+      <td>
+        <button onclick="toggleSellerStatus(${index})">
+          ${seller.status === 'active' ? 'Desactivar' : 'Activar'}
+        </button>
+        <button onclick="deleteSeller(${index})">Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  // Update sellers in exit orders form
+  updateSellerDropdowns();
+}
+
+function toggleSellerStatus(index) {
+  sellers[index].status = sellers[index].status === 'active' ? 'inactive' : 'active';
+  updateSellersList();
+}
+
+function deleteSeller(index) {
+  if (confirm('¿Está seguro de eliminar este vendedor?')) {
+    sellers.splice(index, 1);
+    updateSellersList();
+  }
+}
+
+function updateSellerDropdowns() {
+  const activeSellerOptions = sellers
+    .filter(seller => seller.status === 'active')
+    .map(seller => `<option value="${seller.code}">${seller.name}</option>`)
+    .join('');
+
+  // Update exit orders seller dropdown
+  const exitSellerField = document.getElementById('exitSeller');
+  if (exitSellerField) {
+    exitSellerField.innerHTML = '<option value="">Seleccionar Vendedor</option>' + activeSellerOptions;
+  }
+
+  // Update settlements seller dropdown
+  const settlementSellerField = document.getElementById('settlementSeller');
+  if (settlementSellerField) {
+    settlementSellerField.innerHTML = '<option value="">Seleccionar Vendedor</option>' + activeSellerOptions;
+  }
+}
+
+function addSeller() {
+  const name = document.getElementById('sellerName').value;
+  const code = document.getElementById('sellerCode').value;
+  const phone = document.getElementById('sellerPhone').value;
+  const email = document.getElementById('sellerEmail').value;
+
+  if (!name || !code) {
+    alert('Por favor ingrese al menos nombre y código del vendedor');
+    return;
+  }
+
+  sellers.push({
+    name,
+    code,
+    phone,
+    email,
+    status: 'active'
+  });
+
+  updateSellersList();
+  clearSellerForm();
+}
+
+function clearSellerForm() {
+  document.getElementById('sellerName').value = '';
+  document.getElementById('sellerCode').value = '';
+  document.getElementById('sellerPhone').value = '';
+  document.getElementById('sellerEmail').value = '';
+}
+
+function updateSellersList() {
+  const tbody = document.getElementById('sellersList');
+  tbody.innerHTML = '';
+
+  sellers.forEach((seller, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${seller.code}</td>
+      <td>${seller.name}</td>
+      <td>${seller.phone}</td>
+      <td>${seller.email}</td>
+      <td><span class="status-${seller.status}">${seller.status}</span></td>
+      <td>
+        <button onclick="toggleSellerStatus(${index})">
+          ${seller.status === 'active' ? 'Desactivar' : 'Activar'}
+        </button>
+        <button onclick="deleteSeller(${index})">Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  // Update sellers in exit orders form
+  updateSellerDropdowns();
+}
+
+function clearForm(type) {
+  switch(type) {
+    case 'ingredient':
+      document.getElementById('ingredientName').value = '';
+      document.getElementById('ingredientQuantity').value = '';
+      document.getElementById('ingredientPrice').value = '';
+      break;
+    case 'material':
+      document.getElementById('materialName').value = '';
+      document.getElementById('stock').value = '';
+      document.getElementById('minStock').value = '';
+      document.getElementById('materialPrice').value = '';
+      break;
+    case 'recipe':
+      document.getElementById('recipeName').value = '';
+      document.getElementById('recipeYield').value = '';
+      break;
+  }
+}
+
+// Save all data to localStorage
+function saveDataToLocalStorage() {
+  try {
+    localStorage.setItem('bakeryIngredients', JSON.stringify(ingredients));
+    localStorage.setItem('bakeryInventory', JSON.stringify(inventory));
+    localStorage.setItem('bakeryRecipes', JSON.stringify(recipes));
+    localStorage.setItem('bakeryProductionOrders', JSON.stringify(productionOrders));
+    localStorage.setItem('bakeryFinishedProducts', JSON.stringify(finishedProducts));
+    localStorage.setItem('bakeryExitOrders', JSON.stringify(exitOrders));
+    localStorage.setItem('bakeryMaterialTransactions', JSON.stringify(materialTransactions));
+    localStorage.setItem('bakeryFinishedProductTransactions', JSON.stringify(finishedProductTransactions));
+    localStorage.setItem('bakeryOrderCounter', orderCounter);
+    localStorage.setItem('bakeryExitOrderCounter', exitOrderCounter);
+    localStorage.setItem('bakerySellers', JSON.stringify(sellers));
+  } catch(e) {
+    console.error('Error saving data:', e);
+  }
+}
+
+// Load all data from localStorage
+function loadDataFromLocalStorage() {
+  try {
+    // Load ingredients
+    const savedIngredients = localStorage.getItem('bakeryIngredients');
+    if (savedIngredients) ingredients = JSON.parse(savedIngredients);
+
+    // Load inventory
+    const savedInventory = localStorage.getItem('bakeryInventory');
+    if (savedInventory) inventory = JSON.parse(savedInventory);
+
+    // Load recipes
+    const savedRecipes = localStorage.getItem('bakeryRecipes');
+    if (savedRecipes) recipes = JSON.parse(savedRecipes);
+
+    // Load production orders
+    const savedProductionOrders = localStorage.getItem('bakeryProductionOrders');
+    if (savedProductionOrders) {
+      productionOrders = JSON.parse(savedProductionOrders);
+      // Convert date strings back to Date objects
+      productionOrders.forEach(order => {
+        if (order.date) order.date = new Date(order.date);
       });
     }
 
-    Swal.fire({
-      icon: 'success',
-      title: '¡Bienvenido!',
-      text: `Acceso exitoso como ${user.role === 'admin' ? 'administrador' : 'usuario'}`,
-      confirmButtonColor: '#8B4513'
-    });
-  } else {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Usuario o contraseña incorrectos',
-      confirmButtonColor: '#8B4513'
-    });
+    // Load finished products
+    const savedFinishedProducts = localStorage.getItem('bakeryFinishedProducts');
+    if (savedFinishedProducts) finishedProducts = JSON.parse(savedFinishedProducts);
+
+    // Load exit orders
+    const savedExitOrders = localStorage.getItem('bakeryExitOrders');
+    if (savedExitOrders) {
+      exitOrders = JSON.parse(savedExitOrders);
+      // Convert date strings back to Date objects
+      exitOrders.forEach(order => {
+        if (order.date) order.date = new Date(order.date);
+      });
+    }
+
+    // Load transactions
+    const savedMaterialTransactions = localStorage.getItem('bakeryMaterialTransactions');
+    if (savedMaterialTransactions) {
+materialTransactions = JSON.parse(savedMaterialTransactions);
+      // Convert date strings back to Date objects
+      materialTransactions.forEach(trans => {
+        if (trans.date) trans.date = new Date(trans.date);
+      });
+    }
+
+    const savedFinishedProductTransactions = localStorage.getItem('bakeryFinishedProductTransactions');
+    if (savedFinishedProductTransactions) {
+      finishedProductTransactions = JSON.parse(savedFinishedProductTransactions);
+      // Convert date strings back to Date objects
+      finishedProductTransactions.forEach(trans => {
+        if (trans.date) trans.date = new Date(trans.date);
+      });
+    }
+
+    // Load counters
+    const savedOrderCounter = localStorage.getItem('bakeryOrderCounter');
+    if (savedOrderCounter) orderCounter = parseInt(savedOrderCounter);
+
+    const savedExitOrderCounter = localStorage.getItem('bakeryExitOrderCounter');
+    if (savedExitOrderCounter) exitOrderCounter = parseInt(savedExitOrderCounter);
+
+    // Load sellers
+    const savedSellers = localStorage.getItem('bakerySellers');
+    if (savedSellers) sellers = JSON.parse(savedSellers);
+
+    // Update all views
+    updateIngredientsTable();
+    updateMaterialsTable();
+    updateRecipesList();
+    updateProductionOrdersList();
+    updateFinishedProductsList();
+    updateExitOrdersList();
+    updateSellersList();
+    calculateTotal();
+  } catch(e) {
+    console.error('Error loading data:', e);
   }
-});
-
-function showAdminPanel() {
-  document.getElementById('menuContainer').style.display = 'none';
-  document.getElementById('adminContainer').style.display = 'block';
 }
 
-function adminBackToMenu() {
-  document.getElementById('adminContainer').style.display = 'none';
-  document.getElementById('menuContainer').style.display = 'block';
+// Add event listener for data saving after any change
+function addDataSavingListeners() {
+  // Save after any click on buttons
+  document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', () => {
+      setTimeout(saveDataToLocalStorage, 100); // Small delay to ensure data is updated
+    });
+  });
+
+  // Save after any input change
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', () => {
+      setTimeout(saveDataToLocalStorage, 100);
+    });
+  });
+
+  // Save after any select change
+  document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', () => {
+      setTimeout(saveDataToLocalStorage, 100);
+    });
+  });
 }
 
-function showRegisterForm() {
-  const usersTable = `
-    <div class="mb-4">
-      <h5>Usuarios Existentes</h5>
-      <table class="table table-bordered">
+// Logout function
+function logout() {
+  // Clear any sensitive data if needed
+  
+  // Hide main container
+  document.querySelector('.container').style.display = 'none';
+  
+  // Show login screen
+  document.getElementById('loginScreen').style.display = 'flex';
+  
+  // Clear login form
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+// Load seller sales
+function loadSellerSales() {
+  const sellerId = document.getElementById('settlementSeller').value;
+  const date = document.getElementById('settlementDate').value;
+
+  if (!sellerId || !date) {
+    return;
+  }
+
+  // Filter exit orders for this seller and date
+  const selectedDate = new Date(date);
+  const relevantOrders = exitOrders.filter(order => 
+    order.seller === sellerId && 
+    order.date.toLocaleDateString() === selectedDate.toLocaleDateString() &&
+    order.status === 'completed'
+  );
+
+  // Calculate totals
+  let totalItems = 0;
+  let totalCost = 0;
+  let totalSales = 0;
+
+  const productSummary = {};
+
+  relevantOrders.forEach(order => {
+    const product = finishedProducts.find(p => p.name === order.product);
+    if (product) {
+      totalItems += order.quantity;
+      const cost = order.quantity * product.lastUnitCost;
+      const sales = order.quantity * product.sellingPrice;
+      totalCost += cost;
+      totalSales += sales;
+
+      // Accumulate product summary
+      if (!productSummary[order.product]) {
+        productSummary[order.product] = {
+          quantity: 0,
+          cost: 0,
+          sales: 0
+        };
+      }
+      productSummary[order.product].quantity += order.quantity;
+      productSummary[order.product].cost += cost;
+      productSummary[order.product].sales += sales;
+    }
+  });
+
+  // Generate summary HTML
+  const seller = sellers.find(s => s.code === sellerId);
+  const summaryDiv = document.getElementById('sellerSalesSummary');
+  summaryDiv.innerHTML = `
+    <h4>Resumen de Ventas</h4>
+    <p><strong>Vendedor:</strong> ${seller ? seller.name : ''}</p>
+    <p><strong>Fecha:</strong> ${new Date(date).toLocaleDateString()}</p>
+    
+    <div style="margin: 20px 0;">
+      <h5>Detalle por Producto:</h5>
+      <table style="width: 100%; margin-bottom: 20px;">
         <thead>
           <tr>
-            <th>Usuario</th>
-            <th>Rol</th>
-            <th>Permisos</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Costo Total</th>
+            <th>Venta Total</th>
+            <th>Utilidad</th>
           </tr>
         </thead>
         <tbody>
-          ${users.map(user => `
+          ${Object.entries(productSummary).map(([product, data]) => `
             <tr>
-              <td>${user.username}</td>
-              <td>${user.role === 'admin' ? 'Administrador' : 'Usuario'}</td>
-              <td>${user.permissions ? user.permissions.join(', ') : 'Ninguno'}</td>
+              <td>${product}</td>
+              <td>${data.quantity}</td>
+              <td>$${data.cost.toFixed(2)}</td>
+              <td>$${data.sales.toFixed(2)}</td>
+              <td>$${(data.sales - data.cost).toFixed(2)}</td>
             </tr>
           `).join('')}
         </tbody>
       </table>
     </div>
+
+    <div style="background-color: #fff5e6; padding: 15px; border-radius: 4px;">
+      <h5>Totales del Día:</h5>
+      <p><strong>Total de Unidades Vendidas:</strong> ${totalItems}</p>
+      <p><strong>Costo Total:</strong> $${totalCost.toFixed(2)}</p>
+      <p><strong>Ventas Totales:</strong> $${totalSales.toFixed(2)}</p>
+      <p><strong>Utilidad:</strong> $${(totalSales - totalCost).toFixed(2)}</p>
+      <p><strong>Margen de Utilidad:</strong> ${((totalSales - totalCost) / totalCost * 100).toFixed(2)}%</p>
+    </div>
   `;
 
-  Swal.fire({
-    title: 'Registro de Nuevo Usuario',
-    html: `
-      ${usersTable}
-      <div class="mb-3">
-        <input type="text" id="newUsername" class="swal2-input" placeholder="Usuario">
-      </div>
-      <div class="mb-3">
-        <input type="password" id="newPassword" class="swal2-input" placeholder="Contraseña">
-      </div>
-      <div class="mb-3">
-        <input type="password" id="confirmPassword" class="swal2-input" placeholder="Confirmar Contraseña">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Rol:</label>
-        <select class="form-control" id="userRole">
-          <option value="user">Usuario</option>
-          <option value="admin">Administrador</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Permisos:</label>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="permZona1" value="zona1">
-          <label class="form-check-label" for="permZona1">Zona 1</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="permZona2" value="zona2">
-          <label class="form-check-label" for="permZona2">Zona 2</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="permZona3" value="zona3">
-          <label class="form-check-label" for="permZona3">Zona 3</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="permZona4" value="zona4">
-          <label class="form-check-label" for="permZona4">Zona 4</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="permAdmin" value="admin">
-          <label class="form-check-label" for="permAdmin">Administración</label>
-        </div>
-      </div>
-    `,
-    confirmButtonColor: '#8B4513',
-    confirmButtonText: 'Registrar',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-    width: '800px',
-    preConfirm: () => {
-      const newUsername = document.getElementById('newUsername').value;
-      const newPassword = document.getElementById('newPassword').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const role = document.getElementById('userRole').value;
-      
-      // Get selected permissions
-      const permissions = ['zona1', 'zona2', 'zona3', 'zona4', 'admin'].filter(perm => 
-        document.getElementById(`perm${perm.charAt(0).toUpperCase() + perm.slice(1)}`).checked
-      );
-
-      if (!newUsername || !newPassword) {
-        Swal.showValidationMessage('Por favor complete todos los campos');
-        return false;
-      }
-
-      if (newPassword !== confirmPassword) {
-        Swal.showValidationMessage('Las contraseñas no coinciden');
-        return false;
-      }
-
-      if (users.some(u => u.username === newUsername)) {
-        Swal.showValidationMessage('El usuario ya existe');
-        return false;
-      }
-
-      if (permissions.length === 0) {
-        Swal.showValidationMessage('Debe seleccionar al menos un permiso');
-        return false;
-      }
-
-      users.push({
-        username: newUsername,
-        password: newPassword,
-        role: role,
-        permissions: permissions
-      });
-      saveToLocalStorage();
-
-      return true;
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        icon: 'success',
-        title: '¡Usuario registrado exitosamente!',
-        confirmButtonColor: '#8B4513'
-      });
-    }
-  });
-}
-
-function forgotPassword() {
-  Swal.fire({
-    title: 'Recuperar Contraseña',
-    text: 'Por favor, contacte al administrador del sistema',
-    icon: 'info',
-    confirmButtonColor: '#8B4513'
-  });
-}
-
-function showAgentsPanel() {
-  Swal.fire({
-    title: 'Seleccione una opción',
-    html: `
-      <button class="btn btn-primary m-2" onclick="showAgentsList()">
-        <i class="fas fa-users"></i> Agentes de Pastoral
-      </button>
-      <button class="btn btn-primary m-2" onclick="showAttendanceControl()">
-        <i class="fas fa-calendar-alt"></i> Control de Asistencia
-      </button>
-    `,
-    showConfirmButton: false,
-    width: '400px'
-  });
-}
-
-function showAgentsList() {
-  Swal.close();
-  document.getElementById('menuContainer').style.display = 'none';
-  document.getElementById('agentsContainer').style.display = 'block';
-  document.getElementById('attendanceContainer').style.display = 'none';
-  updateAgentsTable();
-}
-
-function showAttendanceControl() {
-  Swal.close();
-  document.getElementById('menuContainer').style.display = 'none';
-  document.getElementById('agentsContainer').style.display = 'none';
-  document.getElementById('attendanceContainer').style.display = 'block';
-}
-
-function backToMenu() {
-  document.getElementById('agentsContainer').style.display = 'none';
-  document.getElementById('attendanceContainer').style.display = 'none';
-  document.getElementById('menuContainer').style.display = 'block';
-}
-
-function newAttendance() {
-  Swal.fire({
-    title: 'Nueva Asistencia',
-    html: `
-      <div class="mb-3">
-        <label class="form-label">Fecha:</label>
-        <input type="date" class="form-control" id="attendanceDate" value="${new Date().toISOString().split('T')[0]}">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Actividad:</label>
-        <div class="d-flex gap-2">
-          <select class="form-control" id="activitySelect" onchange="handleActivitySelect()">
-            <option value="">Seleccione una actividad</option>
-            ${actividadesDB.map(act => `
-              <option value="${act}">${act}</option>
-            `).join('')}
-            <option value="other">Otra actividad...</option>
-          </select>
-          <button type="button" class="btn btn-secondary" onclick="administrarActividades()">
-            <i class="fas fa-cog"></i>
-          </button>
-        </div>
-        <div id="customActivityContainer" style="display: none;" class="mt-2">
-          <input type="text" class="form-control" id="customActivity" placeholder="Ingrese el nombre de la actividad">
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Filtrar Agentes:</label>
-        <div class="d-flex gap-2">
-          <input type="text" class="form-control" id="filterAgents" placeholder="Buscar por nombre o DPI" onkeyup="filterAgentsList()">
-          <button type="button" class="btn btn-primary" onclick="filterAgentsList()">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Seleccionar Agentes y Estado:</label>
-        <div id="agentsListContainer" style="max-height: 400px; overflow-y: auto;">
-          ${generateAgentsList(agentesDB)}
-        </div>
-      </div>
-    `,
-    confirmButtonText: 'Guardar',
-    confirmButtonColor: '#8B4513',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-    width: '800px',
-    preConfirm: () => {
-      let attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
-      agentesDB.forEach((agent, idx) => {
-        const status = document.querySelector(`input[name="attendance${idx}"]:checked`).value;
-        const justification = document.getElementById(`justificacion${idx}`).files[0] ? 
-          'Tiene justificación adjunta' : '';
-        const newRecord = {
-          date: document.getElementById('attendanceDate').value,
-          activity: document.getElementById('activitySelect').value === 'other' ? 
-            document.getElementById('customActivity').value : 
-            document.getElementById('activitySelect').value,
-          agentName: agent.nombre,
-          status: status,
-          justification: justification
-        };
-        attendanceRecords.push(newRecord);
-      });
-      localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
-    }
-  });
-}
-
-function generateAgentsList(agents) {
-  return agents.map((agent, idx) => `
-    <div class="card mb-2 agent-card" data-name="${agent.nombre.toLowerCase()}" data-dpi="${agent.dpi}">
-      <div class="card-body">
-        <h6>${agent.nombre} - ${agent.dpi}</h6>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="attendance${idx}" id="ausente${idx}" value="ausente" checked>
-          <label class="form-check-label" for="ausente${idx}">Ausente</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="attendance${idx}" id="presente${idx}" value="presente">
-          <label class="form-check-label" for="presente${idx}">Presente</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="attendance${idx}" id="justificado${idx}" value="justificado">
-          <label class="form-check-label" for="justificado${idx}">Ausente con Justificación</label>
-        </div>
-        <div id="justificacionContainer${idx}" style="display: none;" class="mt-2">
-          <input type="file" class="form-control" id="justificacion${idx}" accept="image/*" 
-            onchange="previewJustificacion(${idx})">
-          <div id="justificacionPreview${idx}" class="mt-2"></div>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function filterAgentsList() {
-  const filterValue = document.getElementById('filterAgents').value.toLowerCase();
-  const agentCards = document.querySelectorAll('.agent-card');
+  // Update return product dropdown with products from today's orders
+  const returnProductSelect = document.getElementById('returnProduct');
+  returnProductSelect.innerHTML = '<option value="">Seleccionar Producto</option>';
   
-  agentCards.forEach(card => {
-    const name = card.dataset.name;
-    const dpi = card.dataset.dpi;
-    if (name.includes(filterValue) || dpi.includes(filterValue)) {
-      card.style.display = 'block';
-    } else {
-      card.style.display = 'none';
-    }
+  Object.keys(productSummary).forEach(product => {
+    const option = document.createElement('option');
+    option.value = product;
+    option.textContent = product;
+    returnProductSelect.appendChild(option);
   });
 }
+</script>
+</body></html>
 
-function handleActivitySelect() {
-  const select = document.getElementById('activitySelect');
-  const customContainer = document.getElementById('customActivityContainer');
-  
-  if (select.value === 'other') {
-    customContainer.style.display = 'block';
-  } else {
-    customContainer.style.display = 'none';
-  }
-}
-
-function administrarActividades() {
-  let actividadesHTML = actividadesDB.map((actividad, index) => `
-    <div class="d-flex align-items-center mb-2">
-      <input type="text" class="form-control actividad-input" value="${actividad}" data-index="${index}">
-      <button class="btn btn-danger ms-2 btn-sm" onclick="eliminarActividad(${index})">
-        <i class="fas fa-trash"></i>
-      </button>
-    </div>
-  `).join('');
-
-  Swal.fire({
-    title: 'Administrar Actividades',
-    html: `
-      <div class="mb-3">
-        ${actividadesHTML}
-      </div>
-      <div class="d-flex gap-2">
-        <input type="text" id="nuevaActividad" class="form-control" placeholder="Nueva actividad">
-        <button type="button" class="btn btn-success" onclick="agregarActividad()">
-          <i class="fas fa-plus"></i>
-        </button>
-      </div>
-    `,
-    showCancelButton: true,
-    showConfirmButton: true,
-    confirmButtonText: 'Guardar Cambios',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#8B4513',
-    didOpen: () => {
-      document.querySelectorAll('.actividad-input').forEach(input => {
-        input.addEventListener('change', (e) => {
-          const index = e.target.dataset.index;
-          actividadesDB[index] = e.target.value;
-          saveToLocalStorage(); // Save updated activities
-        });
-      });
-    }
-  });
-}
-
-function agregarActividad() {
-  const nuevaActividad = document.getElementById('nuevaActividad').value.trim();
-  if (nuevaActividad) {
-    actividadesDB.push(nuevaActividad);
-    saveToLocalStorage(); // Save updated activities
-    administrarActividades();
-  }
-}
-
-function eliminarActividad(index) {
-  Swal.fire({
-    title: '¿Está seguro?',
-    text: `¿Realmente desea eliminar la actividad "${actividadesDB[index]}"?`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#dc3545',
-    cancelButtonColor: '#8B4513',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      actividadesDB.splice(index, 1);
-      saveToLocalStorage(); // Save updated activities
-      administrarActividades();
-      Swal.fire({
-        title: 'Eliminado',
-        text: 'La actividad ha sido eliminada exitosamente',
-        icon: 'success',
-        confirmButtonColor: '#8B4513'
-      });
-    }
-  });
-}
-
-function previewJustificacion(idx) {
-  const file = document.getElementById(`justificacion${idx}`).files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const preview = document.getElementById(`justificacionPreview${idx}`);
-      preview.innerHTML = `
-        <img src="${e.target.result}" alt="Justificación" style="max-width: 200px; max-height: 200px;">
-      `;
-    }
-    reader.readAsDataURL(file);
-  }
-}
-
-function reportAttendance() {
-  Swal.fire({
-    title: 'Reporte de Asistencia',
-    html: `
-      <div class="mb-3">
-        <label class="form-label">Fecha Inicio:</label>
-        <input type="date" class="form-control" id="startDate">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Fecha Fin:</label>
-        <input type="date" class="form-control" id="endDate">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Agente:</label>
-        <select class="form-control" id="agentFilter">
-          <option value="">Todos los agentes</option>
-          ${agentesDB.map(agent => `
-            <option value="${agent.nombre}">${agent.nombre}</option>
-          `).join('')}
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Actividad:</label>
-        <select class="form-control" id="activityFilter">
-          <option value="">Todas las actividades</option>
-          ${actividadesDB.map(activity => `
-            <option value="${activity}">${activity}</option>
-          `).join('')}
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Estado:</label>
-        <select class="form-control" id="statusFilter">
-          <option value="">Todos los estados</option>
-          <option value="presente">Presente</option>
-          <option value="ausente">Ausente</option>
-          <option value="justificado">Ausente con Justificación</option>
-        </select>
-      </div>
-      <div class="buttons-row mt-3">
-        <button class="btn btn-success" onclick="generateAttendanceReport('excel')">
-          <i class="fas fa-file-excel"></i> Exportar a Excel
-        </button>
-        <button class="btn btn-danger" onclick="generateAttendanceReport('pdf')">
-          <i class="fas fa-file-pdf"></i> Exportar a PDF
-        </button>
-      </div>
-    `,
-    showCancelButton: true,
-    showConfirmButton: false,
-    cancelButtonText: 'Cerrar',
-    width: '600px'
-  });
-}
-
-function generateAttendanceReport(type) {
-  const startDate = document.getElementById('startDate').value;
-  const endDate = document.getElementById('endDate').value;
-  const agent = document.getElementById('agentFilter').value;
-  const status = document.getElementById('statusFilter').value;
-
-  let attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
-
-  let filteredRecords = attendanceRecords.filter(record => {
-    const dateMatches = (!startDate || record.date >= startDate) && 
-                       (!endDate || record.date <= endDate);
-    const agentMatches = !agent || record.agentName === agent;
-    const statusMatches = !status || record.status === status;
-    const activityMatches = !document.getElementById('activityFilter').value || 
-                           record.activity === document.getElementById('activityFilter').value;
-    
-    return dateMatches && agentMatches && statusMatches && activityMatches;
-  });
-
-  // Group records by agent
-  const groupedRecords = {};
-  const months = [];
-  const activities = new Set();
-  const totals = {};
-
-  filteredRecords.forEach(record => {
-    const month = new Date(record.date).toLocaleString('es-ES', { month: 'long' });
-    if (!months.includes(month)) {
-      months.push(month);
-    }
-    
-    activities.add(record.activity);
-    
-    if (!groupedRecords[record.agentName]) {
-      groupedRecords[record.agentName] = {};
-      totals[record.agentName] = {
-        presente: 0,
-        ausente: 0,
-        justificado: 0
-      };
-    }
-    
-    if (!groupedRecords[record.agentName][month]) {
-      groupedRecords[record.agentName][month] = {};
-    }
-    
-    groupedRecords[record.agentName][month][record.activity] = record.status;
-    totals[record.agentName][record.status]++;
-  });
-
-  if (type === 'excel') {
-    let csvContent = "data:text/csv;charset=utf-8,";
-    
-    // Header row with months, activities and dates
-    csvContent += "Agente," + months.map(month => 
-      Array.from(activities).map(activity => `${month} - ${activity} (Fecha)`).join(',')
-    ).join(',') + ",Total Presentes,Total Ausentes,Total Justificados\n";
-    
-    // Data rows with symbols
-    Object.keys(groupedRecords).forEach(agent => {
-      let row = [agent];
-      months.forEach(month => {
-        activities.forEach(activity => {
-          const record = filteredRecords.find(r => 
-            r.agentName === agent && 
-            new Date(r.date).toLocaleString('es-ES', { month: 'long' }) === month &&
-            r.activity === activity
-          );
-          const status = record ? record.status : 'N/A';
-          let symbol = 'N/A';
-          if (status === 'presente') symbol = '✓';
-          else if (status === 'ausente') symbol = 'X';
-          else if (status === 'justificado') symbol = '■';
-          row.push(`${symbol}<br>${record ? record.date : ''}`);
-        });
-      });
-      row.push(totals[agent].presente || 0);
-      row.push(totals[agent].ausente || 0);
-      row.push(totals[agent].justificado || 0);
-      csvContent += row.join(',') + "\n";
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `reporte_asistencia_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } else {
-    // For PDF/Print version
-    const printContent = `
-      <html>
-        <head>
-          <title>Reporte de Asistencia</title>
-          <style>
-            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            th, td { border: 1px solid black; padding: 8px; text-align: left; }
-            th { background-color: #8B4513; color: white; }
-            .totals { background-color: #f5f5f5; font-weight: bold; }
-            .presente { color: green; font-size: 16px; }
-            .ausente { color: red; font-size: 16px; }
-            .justificado { color: #FFD700; font-size: 16px; }
-            .signatures {
-              display: flex;
-              justify-content: space-between;
-              margin-top: 100px;
-              text-align: center;
-            }
-            .signature-line {
-              width: 200px;
-              border-top: 1px solid black;
-              margin-top: 50px;
-              margin-bottom: 10px;
-            }
-            .signature-title {
-              font-weight: bold;
-            }
-          </style>
-        </head>
-        <body>
-          <h2>Reporte de Asistencia</h2>
-          <h3>Período: ${startDate || 'Inicio'} - ${endDate || 'Fin'}</h3>
-          ${agent ? `<h4>Agente: ${agent}</h4>` : ''}
-          ${status ? `<h4>Estado: ${status}</h4>` : ''}
-          <table>
-            <thead>
-              <tr>
-                <th>Agente</th>
-                ${months.map(month => 
-                  Array.from(activities).map(activity => 
-                    `<th>${month}<br>${activity}<br>Fecha</th>`
-                  ).join('')
-                ).join('')}
-                <th>Total Presentes</th>
-                <th>Total Ausentes</th>
-                <th>Total Justificados</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${Object.keys(groupedRecords).map(agent => `
-                <tr>
-                  <td>${agent}</td>
-                  ${months.map(month => 
-                    Array.from(activities).map(activity => {
-                      const record = filteredRecords.find(r => 
-                        r.agentName === agent && 
-                        new Date(r.date).toLocaleString('es-ES', { month: 'long' }) === month &&
-                        r.activity === activity
-                      );
-                      const status = record ? record.status : 'N/A';
-                      let symbol = 'N/A';
-                      if (status === 'presente') symbol = '<span class="presente">✓</span>';
-                      else if (status === 'ausente') symbol = '<span class="ausente">✗</span>';
-                      else if (status === 'justificado') symbol = '<span class="justificado">■</span>';
-                      return `<td>${symbol}<br><span style="font-size: 0.7em;">${record ? record.date : ''}</span></td>`;
-                    }).join('')
-                  ).join('')}
-                  <td class="totals">${totals[agent].presente || 0}</td>
-                  <td class="totals">${totals[agent].ausente || 0}</td>
-                  <td class="totals">${totals[agent].justificado || 0}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-
-          <div class="signatures">
-            <div>
-              <div class="signature-line"></div>
-              <div class="signature-title">Asesor(a)</div>
-            </div>
-            <div>
-              <div class="signature-line"></div>
-              <div class="signature-title">Formador</div>
-            </div>
-            <div>
-              <div class="signature-line"></div>
-              <div class="signature-title">Formador 2</div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-    
-    const printWindow = window.open('', '', 'height=600,width=800');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.print();
-  }
-}
-
-function logout() {
-  document.getElementById('menuContainer').style.display = 'none';
-  document.getElementById('loginContainer').style.display = 'block';
-  document.getElementById('loginForm').reset();
-  
-  // Clear user display
-  document.getElementById('currentUserDisplay').textContent = '';
-}
-
-function newAgent() {
-  let photoPreview = '';
-  
-  Swal.fire({
-    title: 'Nuevo Agente de Pastoral',
-    html: `
-      <form id="newAgentForm" class="text-start">
-        <div class="mb-3">
-          <label class="form-label">Foto:</label>
-          <input type="file" class="form-control" id="photo" accept="image/*" onchange="previewPhoto(event)">
-          <div id="photoPreview"></div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Nombre:</label>
-          <input type="text" class="form-control" id="nombre" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">DPI:</label>
-          <input type="text" class="form-control" id="dpi" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">No. Celular:</label>
-          <input type="tel" class="form-control" id="celular" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Comunidad:</label>
-          <input type="text" class="form-control" id="comunidad" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Oratorio:</label>
-          <input type="text" class="form-control" id="oratorio" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Fecha de Nacimiento:</label>
-          <input type="date" class="form-control" id="fechaNacimiento" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Fecha de Inicio:</label>
-          <input type="date" class="form-control" id="fechaInicio" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Documentos (PDF):</label>
-          <input type="file" class="form-control" id="documentos" accept=".pdf" multiple>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Ministerio:</label>
-          <div class="d-flex gap-2">
-            <select class="form-control" id="ministerio" required>
-              <option value="">Seleccione un ministerio</option>
-              ${ministeriosDB.map(ministerio => `
-                <option value="${ministerio}">${ministerio}</option>
-              `).join('')}
-            </select>
-            <button type="button" class="btn btn-secondary" onclick="administrarMinisterios()">
-              <i class="fas fa-cog"></i>
-            </button>
-          </div>
-        </div>
-      </form>
-    `,
-    confirmButtonText: 'Guardar',
-    confirmButtonColor: '#8B4513',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-    width: '800px',
-    preConfirm: () => {
-      const formData = {
-        photo: document.getElementById('photo').files[0],
-        nombre: document.getElementById('nombre').value,
-        dpi: document.getElementById('dpi').value,
-        celular: document.getElementById('celular').value,
-        comunidad: document.getElementById('comunidad').value,
-        oratorio: document.getElementById('oratorio').value,
-        fechaNacimiento: document.getElementById('fechaNacimiento').value,
-        fechaInicio: document.getElementById('fechaInicio').value,
-        documentos: document.getElementById('documentos').files,
-        ministerio: document.getElementById('ministerio').value,
-        tiempoServicio: calculateServiceTime(document.getElementById('fechaInicio').value),
-        hasLinkedRecords: false
-      };
-
-      if (formData.photo) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          formData.photoUrl = e.target.result;
-          agentesDB.push(formData);
-          saveToLocalStorage(); // Save updated agents
-          updateAgentsTable();
-        }
-        reader.readAsDataURL(formData.photo);
-      } else {
-        agentesDB.push(formData);
-        saveToLocalStorage(); // Save updated agents
-        updateAgentsTable();
-      }
-
-      return formData;
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        icon: 'success',
-        title: '¡Agente guardado exitosamente!',
-        confirmButtonColor: '#8B4513'
-      });
-    }
-  });
-}
-
-function calculateServiceTime(startDate) {
-  const start = new Date(startDate);
-  const today = new Date();
-  const diffTime = Math.abs(today - start);
-  const diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-  const diffMonths = Math.floor((diffTime % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
-  return `${diffYears} años y ${diffMonths} meses`;
-}
-
-function previewPhoto(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const preview = document.getElementById('photoPreview');
-      preview.innerHTML = `<img src="${e.target.result}" class="form-preview-image">`;
-    }
-    reader.readAsDataURL(file);
-  }
-}
-
-function updateAgentsTable() {
-  const tableBody = document.getElementById('agentsTableBody');
-  tableBody.innerHTML = '';
-  
-  agentesDB.forEach(agent => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>
-        ${agent.photoUrl ? 
-          `<img src="${agent.photoUrl}" alt="Foto de ${agent.nombre}">` : 
-          '<i class="fas fa-user" style="font-size: 24px;"></i>'}
-      </td>
-      <td>${agent.nombre}</td>
-      <td>${agent.dpi}</td>
-      <td>${agent.celular}</td>
-      <td>${agent.comunidad}</td>
-      <td>${agent.oratorio}</td>
-      <td>${agent.ministerio}</td>
-      <td>${agent.tiempoServicio}</td>
-    `;
-    tableBody.appendChild(row);
-  });
-}
-
-function editAgent() {
-  if (!agentesDB.length) {
-    Swal.fire({
-      title: 'No hay agentes',
-      text: 'No hay agentes registrados para editar',
-      icon: 'info',
-      confirmButtonColor: '#8B4513'
-    });
-    return;
-  }
-
-  const agentOptions = agentesDB.map((agent, index) => 
-    `<option value="${index}">${agent.nombre} - ${agent.dpi}</option>`
-  ).join('');
-
-  Swal.fire({
-    title: 'Editar Agente de Pastoral',
-    html: `
-      <select class="form-control mb-3" id="agentToEdit">
-        <option value="">Seleccione un agente para editar</option>
-        ${agentOptions}
-      </select>
-    `,
-    showCancelButton: true,
-    confirmButtonColor: '#8B4513',
-    confirmButtonText: 'Continuar',
-    cancelButtonText: 'Cancelar',
-    preConfirm: () => {
-      const selectedIndex = document.getElementById('agentToEdit').value;
-      if (!selectedIndex) {
-        Swal.showValidationMessage('Por favor seleccione un agente');
-        return false;
-      }
-      return selectedIndex;
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const selectedIndex = parseInt(result.value);
-      const agent = agentesDB[selectedIndex];
-      showEditForm(agent, selectedIndex);
-    }
-  });
-}
-
-function showEditForm(agent, index) {
-  Swal.fire({
-    title: 'Editar Agente de Pastoral',
-    html: `
-      <form id="editAgentForm" class="text-start">
-        <div class="mb-3">
-          <label class="form-label">Foto Actual:</label>
-          ${agent.photoUrl ? 
-            `<img src="${agent.photoUrl}" class="form-preview-image d-block">` : 
-            '<p>No hay foto</p>'}
-          <label class="form-label">Nueva Foto:</label>
-          <input type="file" class="form-control" id="editPhoto" accept="image/*" onchange="previewPhoto(event)">
-          <div id="photoPreview"></div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Nombre:</label>
-          <input type="text" class="form-control" id="editNombre" value="${agent.nombre}" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">DPI:</label>
-          <input type="text" class="form-control" id="editDpi" value="${agent.dpi}" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">No. Celular:</label>
-          <input type="tel" class="form-control" id="editCelular" value="${agent.celular}" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Comunidad:</label>
-          <input type="text" class="form-control" id="editComunidad" value="${agent.comunidad}" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Oratorio:</label>
-          <input type="text" class="form-control" id="editOratorio" value="${agent.oratorio}" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Fecha de Nacimiento:</label>
-          <input type="date" class="form-control" id="editFechaNacimiento" value="${agent.fechaNacimiento}" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Fecha de Inicio:</label>
-          <input type="date" class="form-control" id="editFechaInicio" value="${agent.fechaInicio}" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Documentos (PDF):</label>
-          <input type="file" class="form-control" id="editDocumentos" accept=".pdf" multiple>
-          ${agent.documentos ? '<p class="text-info">Ya hay documentos cargados</p>' : ''}
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Ministerio:</label>
-          <div class="d-flex gap-2">
-            <select class="form-control" id="editMinisterio" required>
-              ${ministeriosDB.map(ministerio => `
-                <option value="${ministerio}" ${agent.ministerio === ministerio ? 'selected' : ''}>
-                  ${ministerio}
-                </option>
-              `).join('')}
-            </select>
-            <button type="button" class="btn btn-secondary" onclick="administrarMinisterios()">
-              <i class="fas fa-cog"></i>
-            </button>
-          </div>
-        </div>
-      </form>
-    `,
-    confirmButtonText: 'Guardar Cambios',
-    confirmButtonColor: '#8B4513',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-    width: '800px',
-    preConfirm: () => {
-      const editedAgent = {
-        nombre: document.getElementById('editNombre').value,
-        dpi: document.getElementById('editDpi').value,
-        celular: document.getElementById('editCelular').value,
-        comunidad: document.getElementById('editComunidad').value,
-        oratorio: document.getElementById('editOratorio').value,
-        fechaNacimiento: document.getElementById('editFechaNacimiento').value,
-        fechaInicio: document.getElementById('editFechaInicio').value,
-        ministerio: document.getElementById('editMinisterio').value,
-        tiempoServicio: calculateServiceTime(document.getElementById('editFechaInicio').value),
-        hasLinkedRecords: agent.hasLinkedRecords,
-        photoUrl: agent.photoUrl // Maintain existing photo if no new one is uploaded
-      };
-
-      const photoInput = document.getElementById('editPhoto');
-      if (photoInput.files.length > 0) {
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            editedAgent.photoUrl = e.target.result;
-            resolve(editedAgent);
-          }
-          reader.readAsDataURL(photoInput.files[0]);
-        });
-      }
-
-      return editedAgent;
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      agentesDB[index] = result.value;
-      saveToLocalStorage(); // Save updated agents
-      updateAgentsTable();
-      
-      Swal.fire({
-        icon: 'success',
-        title: 'Cambios Guardados',
-        text: 'Los datos del agente han sido actualizados exitosamente',
-        confirmButtonColor: '#8B4513'
-      });
-    }
-  });
-}
-
-function deleteAgent() {
-  if (!agentesDB.length) {
-    Swal.fire({
-      title: 'No hay agentes',
-      text: 'No hay agentes registrados para eliminar',
-      icon: 'info',
-      confirmButtonColor: '#8B4513'
-    });
-    return;
-  }
-
-  const deletableAgents = agentesDB.filter(agent => !agent.hasLinkedRecords);
-
-  if (!deletableAgents.length) {
-    Swal.fire({
-      title: 'No hay agentes disponibles',
-      text: 'No hay agentes que se puedan eliminar. Todos tienen registros vinculados.',
-      icon: 'warning',
-      confirmButtonColor: '#8B4513'
-    });
-    return;
-  }
-
-  const agentOptions = agentesDB.map((agent, index) => {
-    if (agent.hasLinkedRecords) {
-      return `<option value="${index}" disabled>${agent.nombre} - ${agent.dpi} (Tiene registros vinculados)</option>`;
-    }
-    return `<option value="${index}">${agent.nombre} - ${agent.dpi}</option>`;
-  }).join('');
-
-  Swal.fire({
-    title: 'Eliminar Agente de Pastoral',
-    html: `
-      <p class="text-danger">¡Atención! Esta acción no se puede deshacer.</p>
-      <p class="text-info">Nota: Los agentes con registros vinculados no pueden ser eliminados.</p>
-      <select class="form-control" id="agentToDelete">
-        <option value="">Seleccione un agente para eliminar</option>
-        ${agentOptions}
-      </select>
-    `,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#dc3545',
-    cancelButtonColor: '#8B4513',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-    preConfirm: () => {
-      const selectedIndex = document.getElementById('agentToDelete').value;
-      if (!selectedIndex) {
-        Swal.showValidationMessage('Por favor seleccione un agente');
-        return false;
-      }
-      
-      const selectedAgent = agentesDB[selectedIndex];
-      if (selectedAgent.hasLinkedRecords) {
-        Swal.showValidationMessage('Este agente no puede ser eliminado porque tiene registros vinculados');
-        return false;
-      }
-      
-      return selectedIndex;
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const indexToDelete = parseInt(result.value);
-      const deletedAgent = agentesDB[indexToDelete].nombre;
-      
-      Swal.fire({
-        title: '¿Está seguro?',
-        text: `¿Realmente desea eliminar al agente ${deletedAgent}?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#8B4513',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-      }).then((finalResult) => {
-        if (finalResult.isConfirmed) {
-          agentesDB.splice(indexToDelete, 1);
-          saveToLocalStorage(); // Save updated agents
-          updateAgentsTable();
-          Swal.fire({
-            title: 'Eliminado',
-            text: `El agente ${deletedAgent} ha sido eliminado exitosamente`,
-            icon: 'success',
-            confirmButtonColor: '#8B4513'
-          });
-        }
-      });
-    }
-  });
-}
-
-function administrarMinisterios() {
-  let ministeriosHTML = ministeriosDB.map((ministerio, index) => `
-    <div class="d-flex align-items-center mb-2">
-      <input type="text" class="form-control ministerio-input" value="${ministerio}" data-index="${index}">
-      <button class="btn btn-danger ms-2 btn-sm" onclick="eliminarMinisterio(${index})">
-        <i class="fas fa-trash"></i>
-      </button>
-    </div>
-  `).join('');
-
-  Swal.fire({
-    title: 'Administrar Ministerios',
-    html: `
-      <div class="mb-3">
-        ${ministeriosHTML}
-      </div>
-      <div class="d-flex gap-2">
-        <input type="text" id="nuevoMinisterio" class="form-control" placeholder="Nuevo ministerio">
-        <button type="button" class="btn btn-success" onclick="agregarMinisterio()">
-          <i class="fas fa-plus"></i>
-        </button>
-      </div>
-    `,
-    showCancelButton: true,
-    showConfirmButton: true,
-    confirmButtonText: 'Guardar Cambios',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#8B4513',
-    width: '600px',
-    didOpen: () => {
-      document.querySelectorAll('.ministerio-input').forEach(input => {
-        input.addEventListener('change', (e) => {
-          const index = e.target.dataset.index;
-          ministeriosDB[index] = e.target.value;
-          saveToLocalStorage(); // Save updated ministerios
-        });
-      });
-    },
-  });
-}
-
-function agregarMinisterio() {
-  const nuevoMinisterio = document.getElementById('nuevoMinisterio').value.trim();
-  if (nuevoMinisterio) {
-    ministeriosDB.push(nuevoMinisterio);
-    saveToLocalStorage(); // Save updated ministerios
-    administrarMinisterios();
-  }
-}
-
-function eliminarMinisterio(index) {
-  const ministerioToDelete = ministeriosDB[index];
-  const ministerioInUse = agentesDB.some(agent => agent.ministerio === ministerioToDelete);
-  
-  if (ministerioInUse) {
-    Swal.fire({
-      title: 'No se puede eliminar',
-      text: 'Este ministerio está siendo usado por uno o más agentes y no puede ser eliminado.',
-      icon: 'error',
-      confirmButtonColor: '#8B4513'
-    });
-    return;
-  }
-
-  Swal.fire({
-    title: '¿Está seguro?',
-    text: `¿Realmente desea eliminar el ministerio "${ministeriosDB[index]}"?`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#dc3545',
-    cancelButtonColor: '#8B4513',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      ministeriosDB.splice(index, 1);
-      saveToLocalStorage(); // Save updated ministerios
-      administrarMinisterios();
-      Swal.fire({
-        title: 'Eliminado',
-        text: 'El ministerio ha sido eliminado exitosamente',
-        icon: 'success',
-        confirmButtonColor: '#8B4513'
-      });
-    }
-  });
-}
-
-function updateMinisterioSelect() {
-  const ministerioSelects = document.querySelectorAll('select#ministerio');
-  ministerioSelects.forEach(select => {
-    const currentValue = select.value;
-    select.innerHTML = `
-      <option value="">Seleccione un ministerio</option>
-      ${ministeriosDB.map(ministerio => `
-        <option value="${ministerio}" ${currentValue === ministerio ? 'selected' : ''}>
-          ${ministerio}
-        </option>
-      `).join('')}
-    `;
-  });
-}
-
-function showReports() {
-  Swal.fire({
-    title: 'Generar Reportes',
-    html: `
-      <div class="text-start">
-        <h5>Reportes Generales</h5>
-        <div class="mb-3">
-          <button class="btn btn-success w-100 mb-2" onclick="generateGeneralReport('excel')">
-            <i class="fas fa-file-excel"></i> Reporte General en Excel
-          </button>
-          <button class="btn btn-danger w-100" onclick="generateGeneralReport('pdf')">
-            <i class="fas fa-file-pdf"></i> Reporte General en PDF
-          </button>
-        </div>
-        <h5>Reportes por Ministerio</h5>
-        <div class="mb-3">
-          <select class="form-control mb-2" id="ministerioReporte">
-            <option value="">Seleccione un ministerio</option>
-            ${ministeriosDB.map(ministerio => `
-              <option value="${ministerio}">${ministerio}</option>
-            `).join('')}
-          </select>
-          <button class="btn btn-success w-100 mb-2" onclick="generateMinisterioReport('excel')">
-            <i class="fas fa-file-excel"></i> Reporte por Ministerio en Excel
-          </button>
-          <button class="btn btn-danger w-100" onclick="generateMinisterioReport('pdf')">
-            <i class="fas fa-file-pdf"></i> Reporte por Ministerio en PDF
-          </button>
-        </div>
-      </div>
-    `,
-    showCancelButton: true,
-    showConfirmButton: false,
-    cancelButtonText: 'Cerrar',
-    width: '600px'
-  });
-}
-
-function generateGeneralReport(type) {
-  const date = new Date().toISOString().slice(0,10);
-  
-  if (type === 'excel') {
-    let csvContent = "data:text/csv;charset=utf-8,";
-    
-    csvContent += "Nombre,DPI,No. Celular,Comunidad,Oratorio,Ministerio,Tiempo de Servicio\n";
-    
-    agentesDB.forEach(agent => {
-      csvContent += `${agent.nombre},${agent.dpi},${agent.celular},${agent.comunidad},${agent.oratorio},${agent.ministerio},${agent.tiempoServicio}\n`;
-    });
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `reporte_general_agentes_${date}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    Swal.fire({
-      icon: 'success',
-      title: 'Reporte Generado',
-      text: 'El reporte en Excel ha sido generado exitosamente',
-      confirmButtonColor: '#8B4513'
-    });
-  } else {
-    const printContent = `
-      <html>
-        <head>
-          <title>Reporte General de Agentes de Pastoral</title>
-          <style>
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid black; padding: 8px; text-align: left; }
-            th { background-color: #8B4513; color: white; }
-          </style>
-        </head>
-        <body>
-          <h2>Reporte General de Agentes de Pastoral</h2>
-          <h3>Fecha: ${date}</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>DPI</th>
-                <th>No. Celular</th>
-                <th>Comunidad</th>
-                <th>Oratorio</th>
-                <th>Ministerio</th>
-                <th>Tiempo de Servicio</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${agentesDB.map(agent => `
-                <tr>
-                  <td>${agent.nombre}</td>
-                  <td>${agent.dpi}</td>
-                  <td>${agent.celular}</td>
-                  <td>${agent.comunidad}</td>
-                  <td>${agent.oratorio}</td>
-                  <td>${agent.ministerio}</td>
-                  <td>${agent.tiempoServicio}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </body>
-      </html>
-    `;
-    
-    const printWindow = window.open('', '', 'height=600,width=800');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.print();
-  }
-}
-
-function generateMinisterioReport(type) {
-  const ministerio = document.getElementById('ministerioReporte').value;
-  if (!ministerio) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Por favor seleccione un ministerio',
-      confirmButtonColor: '#8B4513'
-    });
-    return;
-  }
-  
-  const date = new Date().toISOString().slice(0,10);
-  const filteredAgents = agentesDB.filter(agent => agent.ministerio === ministerio);
-  
-  if (type === 'excel') {
-    let csvContent = "data:text/csv;charset=utf-8,";
-    
-    csvContent += "Nombre,DPI,No. Celular,Comunidad,Oratorio,Tiempo de Servicio\n";
-    
-    filteredAgents.forEach(agent => {
-      csvContent += `${agent.nombre},${agent.dpi},${agent.celular},${agent.comunidad},${agent.oratorio},${agent.tiempoServicio}\n`;
-    });
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `reporte_${ministerio}_${date}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    Swal.fire({
-      icon: 'success',
-      title: 'Reporte Generado',
-      text: `El reporte de ${ministerio} en Excel ha sido generado exitosamente`,
-      confirmButtonColor: '#8B4513'
-    });
-  } else {
-    const printContent = `
-      <html>
-        <head>
-          <title>Reporte de Agentes - ${ministerio}</title>
-          <style>
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid black; padding: 8px; text-align: left; }
-            th { background-color: #8B4513; color: white; }
-          </style>
-        </head>
-        <body>
-          <h2>Reporte de Agentes - ${ministerio}</h2>
-          <h3>Fecha: ${date}</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>DPI</th>
-                <th>No. Celular</th>
-                <th>Comunidad</th>
-                <th>Oratorio</th>
-                <th>Tiempo de Servicio</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${filteredAgents.map(agent => `
-                <tr>
-                  <td>${agent.nombre}</td>
-                  <td>${agent.dpi}</td>
-                  <td>${agent.celular}</td>
-                  <td>${agent.comunidad}</td>
-                  <td>${agent.oratorio}</td>
-                  <td>${agent.tiempoServicio}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </body>
-      </html>
-    `;
-    
-    const printWindow = window.open('', '', 'height=600,width=800');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.print();
-  }
-}
-
-function showImportDialog() {
-  Swal.fire({
-    title: 'Importar Agentes desde Excel',
-    html: `
-      <div class="mb-3">
-        <p>Por favor, asegúrese que su archivo Excel tenga las siguientes columnas:</p>
-        <ul class="text-start">
-          <li>Nombre</li>
-          <li>DPI</li>
-          <li>No. Celular</li>
-          <li>Comunidad</li>
-          <li>Oratorio</li>
-          <li>Ministerio</li>
-          <li>Fecha de Nacimiento (YYYY-MM-DD)</li>
-          <li>Fecha de Inicio (YYYY-MM-DD)</li>
-        </ul>
-        <input type="file" class="form-control" id="excelFile" accept=".xlsx, .xls, .csv">
-      </div>
-    `,
-    confirmButtonText: 'Importar',
-    confirmButtonColor: '#8B4513',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-    width: '600px',
-    preConfirm: () => {
-      const file = document.getElementById('excelFile').files[0];
-      if (!file) {
-        Swal.showValidationMessage('Por favor seleccione un archivo');
-        return false;
-      }
-      return file;
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const file = result.value;
-      processExcelFile(file);
-    }
-  });
-}
-
-function processExcelFile(file) {
-  // Show loading state
-  Swal.fire({
-    title: 'Procesando archivo...',
-    html: 'Por favor espere mientras se importan los datos',
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    }
-  });
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, {type: 'array'});
-    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {raw: true});
-
-    const importResults = {
-      success: 0,
-      errors: [],
-      total: jsonData.length
-    };
-
-    jsonData.forEach((row, index) => {
-      try {
-        // Validate required fields
-        const requiredFields = ['Nombre', 'DPI', 'No. Celular', 'Comunidad', 'Oratorio', 'Ministerio'];
-        const missingFields = requiredFields.filter(field => !row[field]);
-        
-        if (missingFields.length > 0) {
-          throw new Error(`Fila ${index + 2}: Campos requeridos faltantes: ${missingFields.join(', ')}`);
-        }
-
-        // Validate ministerio exists
-        if (!ministeriosDB.includes(row.Ministerio)) {
-          throw new Error(`Fila ${index + 2}: Ministerio "${row.Ministerio}" no existe en el sistema`);
-        }
-
-        // Create agent object
-        const agent = {
-          nombre: row.Nombre,
-          dpi: row.DPI.toString(),
-          celular: row['No. Celular'].toString(),
-          comunidad: row.Comunidad,
-          oratorio: row.Oratorio,
-          ministerio: row.Ministerio,
-          fechaNacimiento: row['Fecha de Nacimiento'] || '',
-          fechaInicio: row['Fecha de Inicio'] || new Date().toISOString().split('T')[0],
-          tiempoServicio: calculateServiceTime(row['Fecha de Inicio'] || new Date().toISOString().split('T')[0]),
-          hasLinkedRecords: false
-        };
-
-        agentesDB.push(agent);
-        saveToLocalStorage(); // Save updated agents
-        importResults.success++;
-      } catch (error) {
-        importResults.errors.push(error.message);
-      }
-    });
-
-    // Update table and show results
-    updateAgentsTable();
-    
-    Swal.fire({
-      title: 'Importación Completada',
-      html: `
-        <div class="text-start">
-          <p>Total de registros: ${importResults.total}</p>
-          <p>Importados exitosamente: ${importResults.success}</p>
-          <p>Errores: ${importResults.errors.length}</p>
-          ${importResults.errors.length > 0 ? `
-            <div class="mt-3">
-              <h6>Detalles de errores:</h6>
-              <ul>
-                ${importResults.errors.map(error => `<li>${error}</li>`).join('')}
-              </ul>
-            </div>
-          ` : ''}
-        </div>
-      `,
-      icon: importResults.errors.length === 0 ? 'success' : 'warning',
-      confirmButtonColor: '#8B4513'
-    });
-  };
-
-  reader.readAsArrayBuffer(file);
-}
-</script></body></html>
